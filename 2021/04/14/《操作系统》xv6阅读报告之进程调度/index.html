@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kinami.cc","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="《操作系统》课程作业之xv6源码阅读报告。本次XV6源码阅读，主要是在上次阅读进程模型的基础上，进一步研究xv6中在进程调度方面的细节。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《操作系统》xv6阅读报告之进程调度">
+<meta property="og:url" content="http://www.kinami.cc/2021/04/14/%E3%80%8A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E3%80%8Bxv6%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A%E4%B9%8B%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/index.html">
+<meta property="og:site_name" content="kinami&#39;s">
+<meta property="og:description" content="《操作系统》课程作业之xv6源码阅读报告。本次XV6源码阅读，主要是在上次阅读进程模型的基础上，进一步研究xv6中在进程调度方面的细节。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-13T17:08:05.000Z">
+<meta property="article:modified_time" content="2021-04-13T17:11:11.619Z">
+<meta property="article:author" content="kinami">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="作业">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.kinami.cc/2021/04/14/%E3%80%8A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E3%80%8Bxv6%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A%E4%B9%8B%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《操作系统》xv6阅读报告之进程调度 | kinami's</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="kinami's" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kinami's</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">一点微小的贡献</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.kinami.cc/2021/04/14/%E3%80%8A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E3%80%8Bxv6%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A%E4%B9%8B%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Tairitsu.jpg">
+      <meta itemprop="name" content="kinami">
+      <meta itemprop="description" content="普通的CS学生/一般通过音游玩家">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kinami's">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《操作系统》xv6阅读报告之进程调度
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-14 01:08:05 / 修改时间：01:11:11" itemprop="dateCreated datePublished" datetime="2021-04-14T01:08:05+08:00">2021-04-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E4%BD%9C%E4%B8%9A/" itemprop="url" rel="index"><span itemprop="name">课程作业</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E4%BD%9C%E4%B8%9A/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/04/14/%E3%80%8A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E3%80%8Bxv6%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A%E4%B9%8B%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/14/%E3%80%8A%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E3%80%8Bxv6%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A%E4%B9%8B%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">《操作系统》课程作业之xv6源码阅读报告。本次XV6源码阅读，主要是在上次阅读进程模型的基础上，进一步研究xv6中在进程调度方面的细节。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>本次XV6源码阅读，主要是在上次阅读<strong>进程模型</strong>的基础上，进一步研究xv6中在进程<strong>调度</strong>方面的细节。主要需要阅读的代码文件和上次类似，有以下这些：<br>| 文件名     | 主要功能                                                     |<br>| ———- | ———————————————————— |<br>| <code>proc.h</code>   | 主要声明了三个<code>struct</code>:<code>cpu</code>,<code>context</code>,<code>proc</code>，分别是内核中的CPU、上下文以及我们重点关注的PCB信息，除此之外还定义了一个枚举型，定义了xv6中进程的可能状态 |<br>| <code>proc.c</code>   | 声明了进程表的数据结构<code>ptable</code>以及与进程有关的核心函数，在本次报告中会对这些函数详细解读 |<br>| <code>vm.c</code>     | 实现了一些与虚拟内存有关的函数，其中与进程有关的部分包括为内核和用户分配内存，切换到当前进程页面的<code>switchuvm()</code>，切换到内核页面的<code>switchkvm()</code>，以及用于拷贝父进程空间到子进程空间的<code>copyuvm()</code>等 |<br>| <code>swtch.S</code>  | 用汇编实现的一个用于切换上下文的函数                         |<br>| <code>kalloc.c</code> | 主要实现了用于分配和释放物理内存的<code>kalloc()</code>以及<code>kfree()</code>    |<br>除此之外，还有定义了一些数据结构的其他头文件，这里不特别列出，在用到的时候会说明。在本次报告中，我们主要关注进程相关的内容，即<code>proc.h</code>和<code>proc.c</code>这两个文件中的内容。</p>
+<h2 id="核心代码解读"><a href="#核心代码解读" class="headerlink" title="核心代码解读"></a>核心代码解读</h2><h3 id="proc-h"><a href="#proc-h" class="headerlink" title="proc.h"></a><code>proc.h</code></h3><p>该部分说明直接复用上次阅读报告，因为定义的结构体之后要用到。<br>在<code>proc.h</code>中，定义了以下数据：</p>
+<ol>
+<li><p><code>struct cpu</code>：这是CPU在呢何种的表示，在这个结构体中，会有一个指向<code>struct proc</code>的指针，用于表示当前正在执行的进程。此外还声明了一个<code>cpus</code>数组，用于支持多核处理器。</p>
+</li>
+<li><p><code>struct context</code>，表示上下文信息的一个结构体，如下所示：</p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">context</span> &#123;</span></span><br><span class="line">  uint edi;</span><br><span class="line">  uint esi;</span><br><span class="line">  uint ebx;</span><br><span class="line">  uint ebp;</span><br><span class="line">  uint eip;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>struct proc</code>，这是XV6中的进程控制块（PCB），如下所示：</p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">proc</span> &#123;</span></span><br><span class="line">  uint sz;</span><br><span class="line">  <span class="keyword">pde_t</span>* pgdir;</span><br><span class="line">  <span class="keyword">char</span> *kstack;</span><br><span class="line">  <span class="class"><span class="keyword">enum</span> <span class="title">procstate</span> <span class="title">state</span>;</span></span><br><span class="line">  <span class="keyword">volatile</span> <span class="keyword">int</span> pid;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">parent</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">trapframe</span> *<span class="title">tf</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">context</span> *<span class="title">context</span>;</span></span><br><span class="line">  <span class="keyword">void</span> *chan;</span><br><span class="line">  <span class="keyword">int</span> killed;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">ofile</span>[<span class="title">NOFILE</span>];</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">inode</span> *<span class="title">cwd</span>;</span></span><br><span class="line">  <span class="keyword">char</span> name[<span class="number">16</span>];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p> 其中各个数据项的详细意义如下：</p>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>uint sz</code></td>
+<td>进程内存空间的大小，单位为byte</td>
+</tr>
+<tr>
+<td><code>pde_t* pgdir</code></td>
+<td>指向进程的page table</td>
+</tr>
+<tr>
+<td><code>char *kstack</code></td>
+<td>指向内核栈的底部</td>
+</tr>
+<tr>
+<td><code>enum procstate state</code></td>
+<td>表示内核当前的状态，其中<code>enum procstate</code>是一个枚举结构，该枚举结构的定义为<code> enum procstate &#123; UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE &#125;;</code>除了未使用（UNUSED）状态之外，进程共有五种状态。</td>
+</tr>
+<tr>
+<td><code>volatile int pid</code></td>
+<td>进程的id</td>
+</tr>
+<tr>
+<td><code>struct proc *parent</code></td>
+<td>指向父进程结构</td>
+</tr>
+<tr>
+<td><code>struct trapframe *tf</code></td>
+<td>指向一个中断帧（<code>trapframe</code>），这个结构体定义在<code>x86.h</code>这个文件中。当进程中断时，这个变量指向进程对应的中断帧。</td>
+</tr>
+<tr>
+<td><code>struct context *context</code></td>
+<td>切换进程时需要保存的上下文信息，其中<code>context</code>结构体已经在之前介绍过。</td>
+</tr>
+<tr>
+<td><code>void *chan</code></td>
+<td>这是一个与睡眠&amp;唤醒有关的数据，如果<code>chan</code>不为空，说明当前进程在<code>chan</code>上休眠，其中<code>chan</code>指的是一个等待队列（wait channel），在xv6中通过调用<code>sleep(chan)</code>来让进程在一个<code>chan</code>上休眠，用<code>wakeup(chan)</code>唤醒一个<code>chan</code>上的进程。</td>
+</tr>
+<tr>
+<td><code>int killed</code></td>
+<td>当<code>killed</code>不为0时，说明这个进程被杀死</td>
+</tr>
+<tr>
+<td><code>struct file *ofile[NOFILE]</code></td>
+<td>打开的文件，其中<code>struct file</code>是一个与文件有关的结构，这里暂且不详细说明。</td>
+</tr>
+<tr>
+<td><code>struct inode *cwd</code></td>
+<td>当前工作目录</td>
+</tr>
+<tr>
+<td><code>char name[16]</code></td>
+<td>进程的名称，debug用</td>
+</tr>
+</tbody></table>
+</li>
+</ol>
+<h3 id="proc-c"><a href="#proc-c" class="headerlink" title="proc.c"></a><code>proc.c</code></h3><ul>
+<li><code>scheduler()</code>函数<br>  在<code>proc.c</code>中，实现了一个跟进程调度有关的函数<code>scheduler()</code>，该函数不接受参数也没有返回值，作用为遍历进程表，找到一个状态为<code>RUNNABLE</code>的进程来执行。代码如下：      <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (p = ptable.proc; p &lt; &amp;ptable.proc[NPROC]; p++)</span><br><span class="line">	&#123;</span><br><span class="line">	  <span class="keyword">if</span> (p-&gt;state != RUNNABLE)</span><br><span class="line">	    <span class="keyword">continue</span>;</span><br><span class="line">	  proc = p;</span><br><span class="line">	  switchuvm(p);</span><br><span class="line">	  p-&gt;state = RUNNING;</span><br><span class="line">	  swtch(&amp;cpu-&gt;scheduler, proc-&gt;context);</span><br><span class="line">	  switchkvm();</span><br><span class="line">	  proc = <span class="number">0</span>;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+  其中<code>ptable.proc</code>是一个储存着所有<code>proc</code>结构体的数组，该函数从数组的第一个元素开始进行遍历（在实际的工作中其实是从前一次切换的位置开始遍历，这个我们之后说明），当找到一个状态为<code>RUNNABLE</code>的进程之后，会调用三个重要的函数<code>switchuvm()</code>,<code>swtch()</code>以及<code>switchkvm()</code>。其中<code>switchuvm()</code>会根据<code>proc</code>结构中的<code>pgdir</code>来找到当前进程需要使用的页表，并进行切换。<code>swtch</code>是一个使用汇编编写的函数，在<code>swtch.S</code>中编写，用于保存当前进程的上下文，然后返回到要切换的进程的上下文（<code>cpu-&gt;scheduler</code>）中。<code>switchkvm()</code>用于切换到内核页表。由代码可见，在xv6的实现里，这个调度函数采用了最简单的实现方法：通过遍历储存着所有进程<code>proc</code>结构的数组来寻找下一个可以开始工作的进程。<br>  在上次报告中，对该部分的解读到此为止，这次我们继续探寻一些细节。</li>
+<li><code>yield()</code>函数<br>  <code>yield()</code>函数代码如下：  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">yield</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  acquire(&amp;ptable.lock); <span class="comment">//DOC: yieldlock</span></span><br><span class="line">  proc-&gt;state = RUNNABLE;</span><br><span class="line">  sched();</span><br><span class="line">  release(&amp;ptable.lock);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  可见其中的逻辑很简单，主要就是将当前进程的状态设置为<code>RUNNABLE</code>，然后再调用<code>sched()</code>函数</li>
+<li><code>sched()</code>函数  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sched</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> intena;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!holding(&amp;ptable.lock))</span><br><span class="line">    panic(<span class="string">&quot;sched ptable.lock&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (cpu-&gt;ncli != <span class="number">1</span>)</span><br><span class="line">    panic(<span class="string">&quot;sched locks&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (proc-&gt;state == RUNNING)</span><br><span class="line">    panic(<span class="string">&quot;sched running&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> (readeflags() &amp; FL_IF)</span><br><span class="line">    panic(<span class="string">&quot;sched interruptible&quot;</span>);</span><br><span class="line">  intena = cpu-&gt;intena;</span><br><span class="line">  swtch(&amp;proc-&gt;context, cpu-&gt;scheduler);</span><br><span class="line">  cpu-&gt;intena = intena;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+  在该函数中，最重要的一句为<code>swtch(&amp;proc-&gt;context, cpu-&gt;scheduler);</code>即进行上下文切换的语句，关于这里的工作逻辑，在我们分析完下面的代码后进行说明。</li>
+</ul>
+<h3 id="swtch-S"><a href="#swtch-S" class="headerlink" title="swtch.S"></a><code>swtch.S</code></h3><p>在这个汇编文件中，实现了一个由汇编写的函数<code>swtch</code>，它是在进程调度时用于保存上下文的核心内容，代码如下</p>
+<ul>
+<li><code>swtch()</code>函数  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">.globl swtch</span><br><span class="line">swtch:</span><br><span class="line">  movl 4(%esp), %eax</span><br><span class="line">  movl 8(%esp), %edx</span><br><span class="line"></span><br><span class="line">  # Save old callee-save registers</span><br><span class="line">  pushl %ebp</span><br><span class="line">  pushl %ebx</span><br><span class="line">  pushl %esi</span><br><span class="line">  pushl %edi</span><br><span class="line"></span><br><span class="line">  # Switch stacks</span><br><span class="line">  movl %esp, (%eax)</span><br><span class="line">  movl %edx, %esp</span><br><span class="line"></span><br><span class="line">  # Load new callee-save registers</span><br><span class="line">  popl %edi</span><br><span class="line">  popl %esi</span><br><span class="line">  popl %ebx</span><br><span class="line">  popl %ebp</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
+  代码的注释中指出，<code>swtch</code>函数接受两个参数:<code>void swtch(struct context **old, struct context *new);</code>，注意两个参数的类型不一样，前一个参数是一个指向<code>context</code>结构指针的指针。<br>  首先3,4两行代码取出了传给<code>swtch</code>的两个参数，其中<code>%eax</code>为<code>old</code>，<code>%edx</code>为<code>new</code>。<br>  7,8,9,10四行则按顺序保存四个寄存器，在保存之前，<code>%esp</code>中存储的内容为返回地址，之后按顺序压入<code>ebp</code>,<code>ebx</code>,<code>esi</code>,<code>edi</code>。操作完成后栈中结构如下：  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">地址高位</span><br><span class="line">	返回地址</span><br><span class="line">	ebp</span><br><span class="line">	ebx</span><br><span class="line">	esi</span><br><span class="line">	edi # 现在的栈顶</span><br><span class="line">地址地位</span><br></pre></td></tr></table></figure>
+  可以发现这个结构对应的正是一个<code>context</code>结构，所以此时的<code>%esp</code>可以看作是一个指向一个<code>context</code>结构的指针。之后第13行，将这个指针保存在第一个参数指向的地方（第一个参数是一个指向<code>context</code>指针的指针），这里的实现相对我们做过的Nachos来说不太一样，所以后面会给出整理后的具体调度流程。  之后，第14行将用第二个参数替换栈顶，然后在17-20行恢复寄存器数据，此时的返回地址是要切换到的线程的返回地址，返回后另一个线程直接开始工作。</li>
+</ul>
+<h3 id="调度逻辑总结"><a href="#调度逻辑总结" class="headerlink" title="调度逻辑总结"></a>调度逻辑总结</h3><p>由于xv6是一个支持多核心的操作系统，在xv6中，每个核心都会有自己的一套上下文以及调度器。在上一部分的代码实现中可以看到，<code>swtch</code>函数的一个参数为<code>cpu-&gt;scheduler</code>。这是<code>struct cpu</code>中的一个成员变量，类型为<code>context *</code>，事实上，它指向的是调度器的上下文。</p>
+<p>在xv6工作时，每个CPU会启动一个调度器，在<code>main()</code>函数中调用，调度器的完整代码如下所示：</p>
+<ul>
+<li><code>scheduler()</code>完整代码  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduler</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">proc</span> *<span class="title">p</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (;;)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">// 这里是我们之前解读过的核心代码</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>可见，这个调度器是不会返回的，一直在循环。代码在调度器中运行时，其实是<code>main()</code>函数的上下文，可以认为是主进程的上下文中（之后称为调度器上下文），然后从这里切换到其他的进程。所以在<code>scheduler()</code>中调用<code>swtch</code>函数时第一个参数为<code>&amp;cpu-&gt;scheduler</code>，将当前调度器进程的上下文保存在<code>cpu-&gt;scheduler</code>中，然后切换到目标进程的上下文中。</p>
+<p>在当前工作的进程<code>yield()</code>时调用了<code>sched()</code>函数，而在这个函数中，我们可以看到调用<code>swtch</code>的函数为<code>swtch(&amp;proc-&gt;context, cpu-&gt;scheduler);</code>实际上当一个进程<code>yield()</code>之后，是先回到调度器进程中，之后再由调度器进程负责找到下一个进程再切换一次，实际上是两次切换，切换到目标进程的工作是由调度器进程完成的。</p>
+<h2 id="总结及收获"><a href="#总结及收获" class="headerlink" title="总结及收获"></a>总结及收获</h2><p>懂得都懂</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>Buy me a coffee.</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kinami 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+              <a href="/tags/%E4%BD%9C%E4%B8%9A/" rel="tag"># 作业</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/" rel="prev" title="《计算机网络概论》lab 4 TCP客户端">
+      <i class="fa fa-chevron-left"></i> 《计算机网络概论》lab 4 TCP客户端
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="nav-text">核心代码解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#proc-h"><span class="nav-text">proc.h</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#proc-c"><span class="nav-text">proc.c</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#swtch-S"><span class="nav-text">swtch.S</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E5%BA%A6%E9%80%BB%E8%BE%91%E6%80%BB%E7%BB%93"><span class="nav-text">调度逻辑总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E5%8F%8A%E6%94%B6%E8%8E%B7"><span class="nav-text">总结及收获</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kinami"
+      src="/images/Tairitsu.jpg">
+  <p class="site-author-name" itemprop="name">kinami</p>
+  <div class="site-description" itemprop="description">普通的CS学生/一般通过音游玩家</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kinami0331" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kinami0331" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/37836067" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;37836067" rel="noopener" target="_blank"><i class="fa fa-fw fa-video-camera"></i>BiliBili</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kinami</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">47k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">43 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'pJIoHmkcB3a8WcdfueanE5sj-gzGzoHsz',
+      appKey     : 'yk0C7ikU2sxqo09Vq42bkbPd',
+      placeholder: "想说点什么吗……",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
