@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kinami.cc","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="北京大学《计算机网络概论》lab实验报告，本次实验为在前面IPv4分组收发实验的基础上，增加分组转发功能。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《计算机网络概论》lab 3 ipv4路由">
+<meta property="og:url" content="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-3-ipv4%E8%B7%AF%E7%94%B1/index.html">
+<meta property="og:site_name" content="kinami&#39;s">
+<meta property="og:description" content="北京大学《计算机网络概论》lab实验报告，本次实验为在前面IPv4分组收发实验的基础上，增加分组转发功能。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-13T16:43:33.000Z">
+<meta property="article:modified_time" content="2021-04-13T16:56:24.745Z">
+<meta property="article:author" content="kinami">
+<meta property="article:tag" content="计算机网络">
+<meta property="article:tag" content="作业">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-3-ipv4%E8%B7%AF%E7%94%B1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《计算机网络概论》lab 3 ipv4路由 | kinami's</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="kinami's" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kinami's</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">一点微小的贡献</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-3-ipv4%E8%B7%AF%E7%94%B1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Tairitsu.jpg">
+      <meta itemprop="name" content="kinami">
+      <meta itemprop="description" content="普通的CS学生/一般通过音游玩家">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kinami's">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《计算机网络概论》lab 3 ipv4路由
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-14 00:43:33 / 修改时间：00:56:24" itemprop="dateCreated datePublished" datetime="2021-04-14T00:43:33+08:00">2021-04-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E4%BD%9C%E4%B8%9A/" itemprop="url" rel="index"><span itemprop="name">课程作业</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E4%BD%9C%E4%B8%9A/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-3-ipv4%E8%B7%AF%E7%94%B1/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-3-ipv4%E8%B7%AF%E7%94%B1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+            <div class="post-description">北京大学《计算机网络概论》lab实验报告，本次实验为在前面IPv4分组收发实验的基础上，增加分组转发功能。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="实验流程"><a href="#实验流程" class="headerlink" title="实验流程"></a>实验流程</h2><h3 id="实验要求"><a href="#实验要求" class="headerlink" title="实验要求"></a>实验要求</h3><p>在前面IPv4分组收发实验的基础上，增加分组转发功能。具体来说，对于每一个到达本机的IPv4分组，根据其目的IPv4地址决定分组的处理行为，对该分组进行如下的几类操作：</p>
+<ol>
+<li>向上层协议上交目的地址为本机地址的分组；</li>
+<li>根据路由查找结果，丢弃查不到路由的分组；</li>
+<li> 根据路由查找结果，向相应接口转发不是本机接收的分组。</li>
+</ol>
+<h3 id="实验思路"><a href="#实验思路" class="headerlink" title="实验思路"></a>实验思路</h3><p>在本次实验中，我们首先需要定义一个路由表结构，并且实现一个增加路由的函数。在实验指导书中给出了一种路由结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">stud_route_msg</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> dest;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> masklen;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">int</span> nexthop;</span><br><span class="line">&#125; stud_route_msg;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>masklen</code>应当指子网掩码中从左往右数的1的个数而不是子网掩码的内容，这一点需要注意。因此，我们的路由表也仿照这样的结构设计即可。需要注意的是，由上层传来的路由表的数据是网络序，为了方便我们转换成本地序处理。</p>
+<p>在接受分组时，首先应该查看目的地址是否为本机，然后查看该分组是否已经失效（例如<code>TTL</code>值小于等于0），然后在路由表中查找，查找不到则丢弃。</p>
+<h3 id="实验细节"><a href="#实验细节" class="headerlink" title="实验细节"></a>实验细节</h3><h4 id="路由表的设计"><a href="#路由表的设计" class="headerlink" title="路由表的设计"></a>路由表的设计</h4><p>路由表设计如下，和实验系统中的设计一致。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RouteInfo</span> &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> dest;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> masklen;   <span class="comment">// 子网掩码的长度（1的个数）</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nexthop;</span><br><span class="line">    RouteInfo(<span class="keyword">int</span> d, <span class="keyword">int</span> m, <span class="keyword">int</span> n) &#123;</span><br><span class="line">        dest = d, masklen = m, nexthop = n;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">vector</span>&lt;RouteInfo&gt; routeTable;   <span class="comment">//路由表</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="初始化路由表函数"><a href="#初始化路由表函数" class="headerlink" title="初始化路由表函数"></a>初始化路由表函数</h4><p>初始化时清空路由表即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 初始化路由表</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stud_Route_Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    routeTable.clear();</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="增加一条新的路由信息"><a href="#增加一条新的路由信息" class="headerlink" title="增加一条新的路由信息"></a>增加一条新的路由信息</h4><p>注意需要将网络序转换为本地序。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 增加路由</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stud_route_add</span><span class="params">(stud_route_msg *proute)</span> </span>&#123;</span><br><span class="line">    <span class="function">RouteInfo <span class="title">t</span><span class="params">(ntohl(proute-&gt;dest), proute-&gt;masklen, ntohl(proute-&gt;nexthop))</span></span>;</span><br><span class="line">    routeTable.push_back(t);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="系统处理收到的IP分组的函数"><a href="#系统处理收到的IP分组的函数" class="headerlink" title="系统处理收到的IP分组的函数"></a>系统处理收到的IP分组的函数</h4><ul>
+<li><p>首先，读取我们感兴趣的头部信息</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 头部长度</span></span><br><span class="line">  <span class="keyword">int</span> headerLength = pBuffer[<span class="number">0</span>] &amp; <span class="number">0xf</span>;</span><br><span class="line">  <span class="comment">// timeToLive</span></span><br><span class="line">  <span class="keyword">int</span> timeToLive = (<span class="keyword">int</span>) pBuffer[<span class="number">8</span>];</span><br><span class="line">  <span class="comment">// 头部校验和</span></span><br><span class="line">  <span class="keyword">int</span> IHL = ntohs(*(<span class="keyword">unsigned</span> <span class="keyword">short</span> *) (pBuffer + <span class="number">10</span>));</span><br><span class="line">  <span class="comment">// 目的IP地址</span></span><br><span class="line">  <span class="keyword">int</span> dstAddr = ntohl(*(<span class="keyword">unsigned</span> <span class="keyword">int</span> *) (pBuffer + <span class="number">16</span>));</span><br></pre></td></tr></table></figure></li>
+<li><p>判断<code>timeToLive</code>值是否出错</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 判断timeToLive</span></span><br><span class="line"><span class="keyword">if</span> (timeToLive &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 错误</span></span><br><span class="line">     <span class="built_in">fwd_DiscardPkt</span>(pBuffer,STUD_FORWARD_TEST_TTLERROR);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>遍历路由表进行查找</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 遍历路由表</span></span><br><span class="line"><span class="keyword">for</span> (vector&lt;RouteInfo&gt;::iterator it = routeTable.<span class="built_in">begin</span>(); it != routeTable.<span class="built_in">end</span>(); it++) &#123;</span><br><span class="line">    <span class="comment">// 计算子网掩码</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> subnetMask = <span class="number">0xffffffff</span> &lt;&lt; (<span class="number">32</span> - it-&gt;masklen);</span><br><span class="line">    <span class="comment">// 查找路由表</span></span><br><span class="line">    <span class="keyword">if</span> ((it-&gt;dest &amp; subnetMask) == (dstAddr &amp; subnetMask)) &#123;</span><br><span class="line">        <span class="comment">// 如果找到了应该更新新的head信息</span></span><br><span class="line">        <span class="comment">// 构造新的ipv4头部内容</span></span><br><span class="line">        <span class="keyword">char</span> *buffer = <span class="keyword">new</span> <span class="keyword">char</span>[length];</span><br><span class="line">        <span class="built_in">memcpy</span>(buffer, pBuffer, length);</span><br><span class="line">        <span class="comment">// timeToLive-1</span></span><br><span class="line">        buffer[<span class="number">8</span>]--;</span><br><span class="line">        <span class="comment">// 清空checksum，便于之后求和计算</span></span><br><span class="line">        buffer[<span class="number">10</span>] = buffer[<span class="number">11</span>] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 计算校验和</span></span><br><span class="line">        <span class="comment">// sum为计算的和</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">short</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// temp用于辅助计算</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">short</span> temp = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// 每16字节为一组</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; headLength * <span class="number">2</span>; i++) &#123;</span><br><span class="line">            <span class="comment">// 注意字节序，前8位为高位，后8位为低位</span></span><br><span class="line">            temp = (((<span class="keyword">unsigned</span> <span class="keyword">char</span>) buffer[i * <span class="number">2</span>]) &lt;&lt; <span class="number">8</span>) + ((<span class="keyword">unsigned</span> <span class="keyword">char</span>) buffer[i * <span class="number">2</span> + <span class="number">1</span>]);</span><br><span class="line">            <span class="comment">// 如果相加之后进1，将进的1位加上</span></span><br><span class="line">            <span class="number">0xffff</span> - sum &lt; temp ? sum = sum + temp + <span class="number">1</span> : sum = sum + temp;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 计算并填充checkNum</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">short</span> headCheckSum = <span class="built_in">htons</span>(<span class="number">0xffff</span> - sum);</span><br><span class="line">        <span class="built_in">memcpy</span>(buffer + <span class="number">10</span>, &amp;headCheckSum, <span class="number">2</span>);</span><br><span class="line">        <span class="comment">// 发送信息  </span></span><br><span class="line">        <span class="built_in">fwd_SendtoLower</span>(buffer, length, it-&gt;nexthop);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>如果遍历之后还没返回，说明没找到路由信息，丢弃。</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 没有路由器</span></span><br><span class="line"><span class="built_in">fwd_DiscardPkt</span>(pBuffer, STUD_FORWARD_TEST_NOROUTE);</span><br><span class="line"><span class="keyword">return</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>至此，实验代码结束，在测试平台上测试通过。</p>
+<h2 id="实验中遇到的问题"><a href="#实验中遇到的问题" class="headerlink" title="实验中遇到的问题"></a>实验中遇到的问题</h2><ol>
+<li>本次实验较为顺利，没遇到太多的疑难问题。</li>
+</ol>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><p>完整代码在这里给出。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;sysInclude.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> std::vector;</span><br><span class="line"><span class="comment">// system support</span></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">fwd_LocalRcv</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">int</span> length)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">fwd_SendtoLower</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">int</span> length, <span class="keyword">unsigned</span> <span class="keyword">int</span> nexthop)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">fwd_DiscardPkt</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">int</span> type)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">getIpv4Address</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">RouteInfo</span> &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> dest;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> masklen;   <span class="comment">// 子网掩码的长度（1的个数）</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> nexthop;</span><br><span class="line">    <span class="built_in">RouteInfo</span>(<span class="keyword">int</span> d, <span class="keyword">int</span> m, <span class="keyword">int</span> n) &#123;</span><br><span class="line">        dest = d, masklen = m, nexthop = n;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">vector&lt;RouteInfo&gt; routeTable;   <span class="comment">//路由表</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 初始化路由表</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stud_Route_Init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    routeTable.<span class="built_in">clear</span>();</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 增加路由</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stud_route_add</span><span class="params">(stud_route_msg *proute)</span> </span>&#123;</span><br><span class="line">    <span class="function">RouteInfo <span class="title">t</span><span class="params">(ntohl(proute-&gt;dest), proute-&gt;masklen, ntohl(proute-&gt;nexthop))</span></span>;</span><br><span class="line">    routeTable.<span class="built_in">push_back</span>(t);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_fwd_deal</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 头部长度</span></span><br><span class="line">    <span class="keyword">int</span> headerLength = pBuffer[<span class="number">0</span>] &amp; <span class="number">0xf</span>;</span><br><span class="line">    <span class="comment">// timeToLive</span></span><br><span class="line">    <span class="keyword">int</span> timeToLive = (<span class="keyword">int</span>) pBuffer[<span class="number">8</span>];</span><br><span class="line">    <span class="comment">// 头部校验和</span></span><br><span class="line">    <span class="keyword">int</span> Head_Checksum = <span class="built_in">ntohs</span>(*(<span class="keyword">unsigned</span> <span class="keyword">short</span> *) (pBuffer + <span class="number">10</span>));</span><br><span class="line">    <span class="comment">// 目的IP地址</span></span><br><span class="line">    <span class="keyword">int</span> dstAddr = <span class="built_in">ntohl</span>(*(<span class="keyword">unsigned</span> <span class="keyword">int</span> *) (pBuffer + <span class="number">16</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果本机地址等于目的IP地址， 接收</span></span><br><span class="line">    <span class="keyword">if</span> (dstAddr == <span class="built_in">getIpv4Address</span>()) &#123;</span><br><span class="line">        <span class="built_in">fwd_LocalRcv</span>(pBuffer, length);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断timeToLive</span></span><br><span class="line">    <span class="keyword">if</span> (timeToLive &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 错误</span></span><br><span class="line">        <span class="built_in">fwd_DiscardPkt</span>(pBuffer, STUD_FORWARD_TEST_TTLERROR);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历路由表</span></span><br><span class="line">    <span class="keyword">for</span> (vector&lt;RouteInfo&gt;::iterator it = routeTable.<span class="built_in">begin</span>(); it != routeTable.<span class="built_in">end</span>(); it++) &#123;</span><br><span class="line">        <span class="comment">// 计算子网掩码</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">int</span> subnetMask = <span class="number">0xffffffff</span> &lt;&lt; (<span class="number">32</span> - it-&gt;masklen);</span><br><span class="line">        <span class="comment">// 查找路由表</span></span><br><span class="line">        <span class="keyword">if</span> ((it-&gt;dest &amp; subnetMask) == (dstAddr &amp; subnetMask)) &#123;</span><br><span class="line">            <span class="comment">// 构造新的ipv4头部内容</span></span><br><span class="line">            <span class="keyword">char</span> *buffer = <span class="keyword">new</span> <span class="keyword">char</span>[length];</span><br><span class="line">            <span class="built_in">memcpy</span>(buffer, pBuffer, length);</span><br><span class="line">            <span class="comment">// timeToLive-1</span></span><br><span class="line">            buffer[<span class="number">8</span>]--;</span><br><span class="line">            <span class="comment">// 清空checksum</span></span><br><span class="line">            buffer[<span class="number">10</span>] = buffer[<span class="number">11</span>] = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 计算校验和</span></span><br><span class="line">            <span class="comment">// sum为计算的和</span></span><br><span class="line">            <span class="keyword">unsigned</span> <span class="keyword">short</span> sum = <span class="number">0</span>;</span><br><span class="line">            <span class="comment">// temp用于辅助计算</span></span><br><span class="line">            <span class="keyword">unsigned</span> <span class="keyword">short</span> temp = <span class="number">0</span>;</span><br><span class="line">            <span class="comment">// 每16字节为一组</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; headLength * <span class="number">2</span>; i++) &#123;</span><br><span class="line">                <span class="comment">// 注意字节序，前8位为高位，后8位为低位</span></span><br><span class="line">                temp = (((<span class="keyword">unsigned</span> <span class="keyword">char</span>) buffer[i * <span class="number">2</span>]) &lt;&lt; <span class="number">8</span>) + ((<span class="keyword">unsigned</span> <span class="keyword">char</span>) buffer[i * <span class="number">2</span> + <span class="number">1</span>]);</span><br><span class="line">                <span class="comment">// 如果相加之后进1，将进的1位加上</span></span><br><span class="line">                <span class="number">0xffff</span> - sum &lt; temp ? sum = sum + temp + <span class="number">1</span> : sum = sum + temp;</span><br><span class="line">                <span class="comment">// if (0xffff - sum &lt; temp)</span></span><br><span class="line">                <span class="comment">//     sum = sum + temp + 1;</span></span><br><span class="line">                <span class="comment">// else</span></span><br><span class="line">                <span class="comment">//     sum = sum + temp;</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">unsigned</span> <span class="keyword">short</span> headCheckSum = <span class="built_in">htons</span>(<span class="number">0xffff</span> - sum);</span><br><span class="line">            <span class="built_in">memcpy</span>(buffer + <span class="number">10</span>, &amp;headCheckSum, <span class="number">2</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="built_in">fwd_SendtoLower</span>(buffer, length, it-&gt;nexthop);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 没有路由器</span></span><br><span class="line">    <span class="built_in">fwd_DiscardPkt</span>(pBuffer, STUD_FORWARD_TEST_NOROUTE);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>Buy me a coffee.</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kinami 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+              <a href="/tags/%E4%BD%9C%E4%B8%9A/" rel="tag"># 作业</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-2-ipv4%E5%88%86%E7%BB%84%E6%94%B6%E5%8F%91/" rel="prev" title="《计算机网络概论》lab 2 ipv4分组收发">
+      <i class="fa fa-chevron-left"></i> 《计算机网络概论》lab 2 ipv4分组收发
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/" rel="next" title="《计算机网络概论》lab 4 TCP客户端">
+      《计算机网络概论》lab 4 TCP客户端 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">实验流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%A6%81%E6%B1%82"><span class="nav-text">实验要求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%9D%E8%B7%AF"><span class="nav-text">实验思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-text">实验细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E8%A1%A8%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-text">路由表的设计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E8%B7%AF%E7%94%B1%E8%A1%A8%E5%87%BD%E6%95%B0"><span class="nav-text">初始化路由表函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A2%9E%E5%8A%A0%E4%B8%80%E6%9D%A1%E6%96%B0%E7%9A%84%E8%B7%AF%E7%94%B1%E4%BF%A1%E6%81%AF"><span class="nav-text">增加一条新的路由信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%A4%84%E7%90%86%E6%94%B6%E5%88%B0%E7%9A%84IP%E5%88%86%E7%BB%84%E7%9A%84%E5%87%BD%E6%95%B0"><span class="nav-text">系统处理收到的IP分组的函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">实验中遇到的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-text">完整代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kinami"
+      src="/images/Tairitsu.jpg">
+  <p class="site-author-name" itemprop="name">kinami</p>
+  <div class="site-description" itemprop="description">普通的CS学生/一般通过音游玩家</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kinami0331" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kinami0331" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/37836067" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;37836067" rel="noopener" target="_blank"><i class="fa fa-fw fa-video-camera"></i>BiliBili</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kinami</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">43k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">39 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'pJIoHmkcB3a8WcdfueanE5sj-gzGzoHsz',
+      appKey     : 'yk0C7ikU2sxqo09Vq42bkbPd',
+      placeholder: "想说点什么吗……",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

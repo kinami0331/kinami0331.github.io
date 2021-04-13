@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kinami.cc","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="北京大学《计算机网络概论》lab实验报告，本次实验实现了一个使用TCP协议的客户端角色，采取等-停模式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《计算机网络概论》lab 4 TCP客户端">
+<meta property="og:url" content="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/index.html">
+<meta property="og:site_name" content="kinami&#39;s">
+<meta property="og:description" content="北京大学《计算机网络概论》lab实验报告，本次实验实现了一个使用TCP协议的客户端角色，采取等-停模式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/lab4-1.png">
+<meta property="article:published_time" content="2021-04-13T16:49:56.000Z">
+<meta property="article:modified_time" content="2021-04-13T16:56:32.018Z">
+<meta property="article:author" content="kinami">
+<meta property="article:tag" content="计算机网络">
+<meta property="article:tag" content="作业">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/lab4-1.png">
+
+<link rel="canonical" href="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《计算机网络概论》lab 4 TCP客户端 | kinami's</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="kinami's" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kinami's</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">一点微小的贡献</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.kinami.cc/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Tairitsu.jpg">
+      <meta itemprop="name" content="kinami">
+      <meta itemprop="description" content="普通的CS学生/一般通过音游玩家">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kinami's">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《计算机网络概论》lab 4 TCP客户端
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-04-14 00:49:56 / 修改时间：00:56:32" itemprop="dateCreated datePublished" datetime="2021-04-14T00:49:56+08:00">2021-04-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E4%BD%9C%E4%B8%9A/" itemprop="url" rel="index"><span itemprop="name">课程作业</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E7%A8%8B%E4%BD%9C%E4%B8%9A/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>22k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>20 分钟</span>
+            </span>
+            <div class="post-description">北京大学《计算机网络概论》lab实验报告，本次实验实现了一个使用TCP协议的客户端角色，采取等-停模式。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="实验流程"><a href="#实验流程" class="headerlink" title="实验流程"></a>实验流程</h2><h3 id="实验要求"><a href="#实验要求" class="headerlink" title="实验要求"></a>实验要求</h3><p>该次实验主要包含以下四部分</p>
+<ol>
+<li>设计TCB结构</li>
+<li>处理TCP协议的包的接收（实现<code>stud_tcp_input()</code>函数）</li>
+<li>封装TCP包（实现<code>stud_tcp_output()</code>函数）</li>
+<li>实现<code>Socket</code>的几个接口函数</li>
+</ol>
+<p>需要注意的是，本次实验中只实现了一个客户端角色的TCP协议并使用等停模式。因此客户端的状态可以做以下简化，如实验指导书上所示</p>
+<p><img src="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-4-TCP%E5%AE%A2%E6%88%B7%E7%AB%AF/lab4-1.png"></p>
+<p><strong>然而这里的图画的又跟后面实验指导书上说的有自相矛盾的地方，具体的要求当然是自己去试试怎么样才对（？）</strong></p>
+<p>所以本次实验的核心在于定义这些状态并实现这里的状态转换。</p>
+<h3 id="实验思路"><a href="#实验思路" class="headerlink" title="实验思路"></a>实验思路</h3><p>本次实验中，我们首先要定义一个TCP结构如下，我们并不考虑选项部分，所以可以认为<code>urgentPointer</code>之后都是数据段，我们只要原封不动的处理即可。</p>
+<p>需要注意的是，在本次实验中，TCP结构统一用网络序表示</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TCP</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint16_t</span> srcPort;</span><br><span class="line">    <span class="keyword">uint16_t</span> dstPort;</span><br><span class="line">    <span class="keyword">uint32_t</span> seqNum;</span><br><span class="line">    <span class="keyword">uint32_t</span> ackNum;</span><br><span class="line">    <span class="keyword">uint8_t</span> headLen;</span><br><span class="line">    <span class="keyword">uint8_t</span> flags;</span><br><span class="line">    <span class="keyword">uint16_t</span> windowSize;</span><br><span class="line">    <span class="keyword">uint16_t</span> checkSum;</span><br><span class="line">    <span class="keyword">uint16_t</span> urgentPointer;</span><br><span class="line">    <span class="keyword">char</span> data[<span class="number">2000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">debugPrint</span><span class="params">()</span></span>&#123; <span class="comment">/* debug用，这里略 */</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>然后，我们设计的TCB结构如下。在本次实验中，我们TCB中的数据以本地序表示。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TCB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> sockfd;             <span class="comment">// 套接字描述符</span></span><br><span class="line">    <span class="keyword">uint32_t</span> srcAddr;       <span class="comment">// 源地址</span></span><br><span class="line">    <span class="keyword">uint16_t</span> srcPort;       <span class="comment">// 源端口</span></span><br><span class="line">    <span class="keyword">uint32_t</span> dstAddr;       <span class="comment">// 目的地址</span></span><br><span class="line">    <span class="keyword">uint16_t</span> dstPort;       <span class="comment">// 目的端口</span></span><br><span class="line">    <span class="keyword">uint32_t</span> seq;           <span class="comment">// seq</span></span><br><span class="line">    <span class="keyword">uint32_t</span> ack;           <span class="comment">// ack</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> ackExpect; <span class="comment">// 应该收到的ack</span></span><br><span class="line">    TCPStatus status;       <span class="comment">// 当前状态</span></span><br><span class="line">    <span class="keyword">char</span> *data;             <span class="comment">// 数据段</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>TCPStatus</code>是一个枚举类，用于表示各种状态，如下，与实验指导书上给出的状态示例相同。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">TCPStatus</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    CLOSED,</span><br><span class="line">    SYN_SENT,</span><br><span class="line">    ESTABLISHED,</span><br><span class="line">    FIN_WAIT1,</span><br><span class="line">    FIN_WAIT2,</span><br><span class="line">    TIME_WAIT</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>作为客户端，需要处理当前连接的状态，我们可以在客户端的本地使用一个全局变量来存储状态，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TCB *currentTCB;</span><br></pre></td></tr></table></figure>
+
+<p>该变量记录了当前的连接信息，每次操作时会查找这里的状态。</p>
+<p>另外，由于客户端可能会发起多个连接，拥有多个套接字连接符，因此我们还需要一个机构存储多个连接信息，本次实验中我们使用<code>std::vector</code>来完成，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">vector</span>&lt;TCB *&gt; TCBTable;</span><br></pre></td></tr></table></figure>
+
+<p>另外，在实现各个函数时一定要<strong>非常注意</strong>字节序的问题。</p>
+<h3 id="实验细节"><a href="#实验细节" class="headerlink" title="实验细节"></a>实验细节</h3><h4 id="实现用于计算check-sum的工具函数"><a href="#实现用于计算check-sum的工具函数" class="headerlink" title="实现用于计算check sum的工具函数"></a>实现用于计算<code>check sum</code>的工具函数</h4><p>该函数主要用于计算<code>checkSum</code>，在本次实验中，我们采用所有数据均为网络序的方法来计算<code>checkSum</code>，在实现时要注意。</p>
+<ul>
+<li><p>首先，给出函数定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">getCheckSum</span><span class="params">(<span class="keyword">char</span> *pBuffer,</span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">unsigned</span> <span class="keyword">short</span> len,</span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr,</span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>pBuffer</code>传来的是一个<strong>网络序</strong>的tcp包，<code>len</code>是这个包的<strong>总长度</strong>（包括头部），<code>srcAddr</code>和<code>dstAddr</code>是<strong>本地序</strong>的源地址和目标地址，用于计算伪头信息。</p>
+</li>
+<li><p>计算伪头部分</p>
+<p>这里需要注意的是，由于<code>srcAddr</code>，<code>dstAddr</code>，<code>len</code>都是本地序，因此这里要做一次转换</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 伪头部分</span></span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr_n = htonl(srcAddr);</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr_n = htonl(dstAddr);</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">short</span> len_n = htons(len);</span><br><span class="line">checkSum += (srcAddr_n &gt;&gt; <span class="number">16</span>) + (srcAddr_n &amp; <span class="number">0xFFFF</span>); <span class="comment">// 源地址</span></span><br><span class="line">checkSum += (dstAddr_n &gt;&gt; <span class="number">16</span>) + (dstAddr_n &amp; <span class="number">0xFFFF</span>); <span class="comment">// 目标地址</span></span><br><span class="line">checkSum += (TCP_PROTOCOL_NUM &lt;&lt; <span class="number">8</span>);                  <span class="comment">// TCP协议号</span></span><br><span class="line">checkSum += len_n;    </span><br></pre></td></tr></table></figure></li>
+<li><p>计算TCP部分如下，由于<code>pBuffer</code>是一整个结构，而且本身就是网络序，因此我们可以直接转成一个16位整数的数组来操作，会很方便。需要注意跳过原来结构中的<code>checkSum</code>部分，该部分对应<strong>第8个16位整数</strong>。当TCP的数据部分是奇数字节时，我们需要在末尾补一个全0字节，因此需要特判奇数，代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint16_t</span> *TCPBuffer = (<span class="keyword">uint16_t</span> *)pBuffer;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len / <span class="number">2</span>; i++)</span><br><span class="line">&#123;</span><br><span class="line">     <span class="keyword">if</span> (i == <span class="number">8</span>)</span><br><span class="line">         <span class="keyword">continue</span>;</span><br><span class="line">     checkSum += TCPBuffer[i];</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">// 注意长度的奇偶，要特判奇数</span></span><br><span class="line"> <span class="keyword">if</span> (len % <span class="number">2</span>)</span><br><span class="line">     checkSum += ((<span class="keyword">uint16_t</span>)(pBuffer[len_h]) &lt;&lt; <span class="number">8</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>最后，我们需要处理高位，将高16位加到低16位上</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 清除高位</span></span><br><span class="line"><span class="keyword">while</span> (checkSum &gt;&gt; <span class="number">16</span>)</span><br><span class="line">    checkSum = (checkSum &amp; <span class="number">0xffff</span>) + (checkSum &gt;&gt; <span class="number">16</span>);</span><br></pre></td></tr></table></figure></li>
+<li><p>最后的结果应该是现在计算出的值的取反，返回即可</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> (~checkSum) &amp; <span class="number">0xffff</span>;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="实现stud-tcp-input"><a href="#实现stud-tcp-input" class="headerlink" title="实现stud_tcp_input"></a>实现<code>stud_tcp_input</code></h4><p><strong>注意！！！！系统调用该函数的时候传进来的地址是网络序！</strong>（但是调用系统提供的一些接口函数时却需要传本地序，果然很奇怪啊）。</p>
+<ul>
+<li><p>首先，将传入的<code>pBuffer</code>转换成一个<code>TCP</code>指针，便于之后操作</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">TCP *tcp = (TCP *)pBuffer;</span><br></pre></td></tr></table></figure></li>
+<li><p>首先，检查<code>checksum</code></p>
+<p>这里调用我们刚才的那个函数即可</p>
+<p><strong>然而，实际上并不会有这个东西出错的时候，而且实验指导书上也没说出错时应该怎么处理，所以这个不写也没问题（在该系统上）</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (getCheckSum(pBuffer, len, ntohl(srcAddr), ntohl(dstAddr)) != ((TCP *)pBuffer)-&gt;checkSum)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 省略了一些debug显示</span></span><br><span class="line">    <span class="comment">// 实验指导书上没定义这个错误？</span></span><br><span class="line">    <span class="comment">// tcp_DiscardPkt(pBuffer, checksum_error);</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>然后，检查<code>ack</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 检查ack</span><br><span class="line">uint32_t ackNum &#x3D; ntohl(tcp-&gt;ackNum);</span><br><span class="line">uint32_t seqNum &#x3D; ntohl(tcp-&gt;seqNum);</span><br><span class="line">if (ackNum !&#x3D; currentTCB-&gt;ackExpect)</span><br><span class="line">&#123;</span><br><span class="line">    tcp_DiscardPkt(pBuffer, STUD_TCP_TEST_SEQNO_ERROR);</span><br><span class="line">    return -1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>之后，是最核心的状态转化的一步，如下：</p>
+<ul>
+<li><p>当前状态为<code>SYN_SENT</code>，接收到的<code>flag</code>为<code>PACKET_TYPE_SYN_ACK</code>，状态转换到<code>ESTABLISHED</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == SYN_SENT &amp;&amp; tcp-&gt;flags == PACKET_TYPE_SYN_ACK)</span><br><span class="line">&#123;</span><br><span class="line">    currentTCB-&gt;status = ESTABLISHED;</span><br><span class="line">    currentTCB-&gt;seq = ackNum;</span><br><span class="line">    currentTCB-&gt;ack = seqNum + <span class="number">1</span>;</span><br><span class="line">    stud_tcp_output(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_ACK,</span><br><span class="line">                    currentTCB-&gt;srcPort,</span><br><span class="line">                    currentTCB-&gt;dstPort,</span><br><span class="line">                    currentTCB-&gt;srcAddr,</span><br><span class="line">                    currentTCB-&gt;dstAddr);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>当前状态为<code>ESTABLISHED</code>，继续进行通信</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">&#123;</span><br><span class="line">    currentTCB-&gt;seq = ackNum;</span><br><span class="line">    currentTCB-&gt;ack = seqNum + (len - TCP_HEADER_LENGTH);</span><br><span class="line">    stud_tcp_output(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_ACK,</span><br><span class="line">                    currentTCB-&gt;srcPort,</span><br><span class="line">                    currentTCB-&gt;dstPort,</span><br><span class="line">                    currentTCB-&gt;srcAddr,</span><br><span class="line">                    currentTCB-&gt;dstAddr);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>当前状态为<code>FIN_WAIT1</code>，接收到的<code>flag</code>为<code>PACKET_TYPE_ACK</code>，状态转化到<code>FIN_WAIT2</code>。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == FIN_WAIT1 &amp;&amp; tcp-&gt;flags == PACKET_TYPE_ACK) &#123;</span><br><span class="line">    currentTCB-&gt;status = FIN_WAIT2;</span><br><span class="line">    currentTCB-&gt;seq = ackNum;</span><br><span class="line">    currentTCB-&gt;ack = seqNum + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>当前状态为<code>FIN_WAIT2</code>，接收到的<code>flag</code>为<code>PACKET_TYPE_FIN_ACK</code>，状态转换到<code>TIME_WAIT</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == FIN_WAIT2 &amp;&amp; tcp-&gt;flags == PACKET_TYPE_FIN_ACK)</span><br><span class="line">&#123;</span><br><span class="line">    currentTCB-&gt;status = TIME_WAIT;</span><br><span class="line">    stud_tcp_output(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_ACK,</span><br><span class="line">                    currentTCB-&gt;srcPort,</span><br><span class="line">                    currentTCB-&gt;dstPort,</span><br><span class="line">                    currentTCB-&gt;srcAddr,</span><br><span class="line">                    currentTCB-&gt;dstAddr);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="实现stud-tcp-output"><a href="#实现stud-tcp-output" class="headerlink" title="实现stud_tcp_output"></a>实现<code>stud_tcp_output</code></h4><p><strong>在我们自己实现自己调用的该函数中，参数里的IP地址均为本地序（主要是一开始我以为<code>input</code>那个函数中也是这样）</strong></p>
+<p><strong>另外一个需要注意的是，在第一部分的测试中，由于该部分会认为没有实现<code>socket</code>接口，所以不会调用相应的函数，也不会有创建<code>TCB</code>这个过程，所以在调用这个函数时会出错（空指针），因此我们需要在这里加一个<code>surrentPCB</code>的初始化。</strong></p>
+<ul>
+<li><p>初始化<code>currentTCB</code>（只针对第一部分的测试）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB == <span class="literal">NULL</span>)</span><br><span class="line">&#123;</span><br><span class="line">    currentTCB = <span class="keyword">new</span> TCB;</span><br><span class="line">    currentTCB-&gt;status = CLOSED;</span><br><span class="line">    currentTCB-&gt;ack = gAckNum;</span><br><span class="line">    currentTCB-&gt;seq = gSeqNum;</span><br><span class="line">    currentTCB-&gt;srcAddr = srcAddr;</span><br><span class="line">    currentTCB-&gt;dstAddr = dstAddr;</span><br><span class="line">    currentTCB-&gt;srcPort = srcPort;</span><br><span class="line">    currentTCB-&gt;dstPort = dstPort;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>创建一个新的<code>tcp</code>结构，并且将<code>pData</code>中的数据复制过去</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line"><span class="built_in">memcpy</span>(tcp-&gt;data, pData, len);</span><br></pre></td></tr></table></figure></li>
+<li><p>构建<code>TCP</code>头，<strong>一定要注意使用网络序</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造TCP头</span></span><br><span class="line">tcp-&gt;srcPort = htons(srcPort);</span><br><span class="line">tcp-&gt;dstPort = htons(dstPort);</span><br><span class="line">tcp-&gt;seqNum = htonl(currentTCB-&gt;seq);</span><br><span class="line">tcp-&gt;ackNum = htonl(currentTCB-&gt;ack);</span><br><span class="line"><span class="comment">// 注意低四位为空，头长度为5 * 4字节</span></span><br><span class="line"><span class="comment">// 二进制格式0x10010000</span></span><br><span class="line">tcp-&gt;headLen = <span class="number">0x50</span>;</span><br><span class="line">tcp-&gt;flags = flag;</span><br><span class="line"><span class="comment">// 注意这里也要进行一次字节序转换！</span></span><br><span class="line">tcp-&gt;windowSize = htons(<span class="number">1</span>);</span><br><span class="line">tcp-&gt;urgentPointer = <span class="number">0</span>;</span><br><span class="line">tcp-&gt;checkSum = <span class="number">0</span>; <span class="comment">// 预清零checkSum</span></span><br><span class="line"><span class="comment">// 这里要加上一个头长度！！！！！</span></span><br><span class="line">tcp-&gt;checkSum = getCheckSum((<span class="keyword">char</span> *)tcp, len + TCP_HEADER_LENGTH, srcAddr, dstAddr);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>之后，同样是进行状态转换的判断</p>
+<ul>
+<li><p>从<code>CLOSE</code>状态转换到<code>SYN_SENT</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == CLOSED &amp;&amp; tcp-&gt;flags == PACKET_TYPE_SYN)</span><br><span class="line">    currentTCB-&gt;status = SYN_SENT;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>从<code>ESTABLISHED</code>状态转换到<code>FIN_WAIT1</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED &amp;&amp; tcp-&gt;flags == PACKET_TYPE_FIN_ACK)</span><br><span class="line">&#123;</span><br><span class="line">    currentTCB-&gt;status = FIN_WAIT1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>之后，我们需要根据本次的发送来计算下次应当受到的<code>ack</code>值，以便于之后的校验，如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">&#123;</span><br><span class="line">    currentTCB-&gt;ackExpect = currentTCB-&gt;seq + len;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">    DebugPrint(<span class="string">&quot;---&gt; Status: %d\n&quot;</span>, currentTCB-&gt;status);</span><br><span class="line">    currentTCB-&gt;ackExpect = currentTCB-&gt;seq + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>最后，调用系统提供的函数进行发送</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcp_sendIpPkt((<span class="keyword">unsigned</span> <span class="keyword">char</span> *)tcp, <span class="number">20</span> + len, currentTCB-&gt;srcAddr, currentTCB-&gt;dstAddr, <span class="number">60</span>);</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>至此，该函数实现完毕。</p>
+<h4 id="实现stud-tcp-socket"><a href="#实现stud-tcp-socket" class="headerlink" title="实现stud_tcp_socket"></a>实现<code>stud_tcp_socket</code></h4><p>该函数并不建立连接，只是分配一个套接字标识符。在<code>Linux</code>中，返回的其实就是一个文件描述符，而<code>Linux</code>中文件描述符的<code>0,1,2</code>已经被占用，因此我们这里从<code>3</code>开始分配（虽然没什么差）。实现如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    DebugPrint(<span class="string">&quot;---&gt; stud_tcp_socket():\n&quot;</span>);</span><br><span class="line">    <span class="comment">// 如果TCB表为空，插入三个NULL</span></span><br><span class="line">    <span class="comment">// socket的返回值应该是一个文件描述符</span></span><br><span class="line">    <span class="comment">// Linux中，文件描述符的0,1,2分别为std_in std_out std_err</span></span><br><span class="line">    <span class="comment">// 所以我们返回的值从3开始</span></span><br><span class="line">    <span class="comment">// 另外，我们希望能根据sockfd直接定位TCB，因此这样实现</span></span><br><span class="line">    <span class="keyword">if</span> (TCBTable.empty())</span><br><span class="line">    &#123;</span><br><span class="line">        TCBTable.push_back(<span class="literal">NULL</span>);</span><br><span class="line">        TCBTable.push_back(<span class="literal">NULL</span>);</span><br><span class="line">        TCBTable.push_back(<span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    currentTCB = <span class="keyword">new</span> TCB;</span><br><span class="line">    currentTCB-&gt;ack = gAckNum;</span><br><span class="line">    currentTCB-&gt;seq = gSeqNum;</span><br><span class="line">    currentTCB-&gt;srcPort = gSrcPort++;</span><br><span class="line">    currentTCB-&gt;sockfd = TCBTable.size();</span><br><span class="line">    currentTCB-&gt;status = CLOSED;</span><br><span class="line"></span><br><span class="line">    TCBTable.push_back(currentTCB);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> currentTCB-&gt;sockfd;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="实现stud-tcp-connect"><a href="#实现stud-tcp-connect" class="headerlink" title="实现stud_tcp_connect"></a>实现<code>stud_tcp_connect</code></h4><p>需要注意这个函数参数中的<code>sockaddr_in</code>结构是一个用来存套接字中的IP地址信息的结构，内部一定是大端存储IP地址，因此需要注意字节序转换。</p>
+<p>在连接时，需要发送一个包，并且在连接时设置<code>currentTCB</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_connect</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr_in *addr, <span class="keyword">int</span> addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line">	<span class="comment">// 注意这里的字节序转换</span></span><br><span class="line">    currentTCB-&gt;dstPort = ntohs(addr-&gt;sin_port);</span><br><span class="line">    currentTCB-&gt;status = SYN_SENT;</span><br><span class="line">    currentTCB-&gt;srcAddr = getIpv4Address();</span><br><span class="line">    currentTCB-&gt;dstAddr = ntohl(addr-&gt;sin_addr.s_addr);</span><br><span class="line">	<span class="comment">// 发送</span></span><br><span class="line">    stud_tcp_output(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_SYN,</span><br><span class="line">                    currentTCB-&gt;srcPort,</span><br><span class="line">                    currentTCB-&gt;dstPort,</span><br><span class="line">                    currentTCB-&gt;srcAddr,</span><br><span class="line">                    currentTCB-&gt;dstAddr);</span><br><span class="line">    <span class="comment">// 等待对方发送的包</span></span><br><span class="line">    TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">    <span class="keyword">int</span> len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">    <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 接收到服务端的包之后调用`stud_tcp_input`处理</span></span><br><span class="line">    <span class="keyword">return</span> stud_tcp_input((<span class="keyword">char</span> *)tcp, len, htonl(currentTCB-&gt;srcAddr), htonl(currentTCB-&gt;dstAddr));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="实现stud-tcp-send"><a href="#实现stud-tcp-send" class="headerlink" title="实现stud_tcp_send"></a>实现<code>stud_tcp_send</code></h4><p>由于我们之前已经实现好了<code>stud_tcp_output</code>和<code>stud_tcp_input</code>，因此这里我们直接调用即可。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_send</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *pData, <span class="keyword">unsigned</span> <span class="keyword">short</span> datalen, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line">	<span class="comment">// 当前必须为可以发消息的状态</span></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        currentTCB-&gt;data = (<span class="keyword">char</span> *)pData;</span><br><span class="line">        stud_tcp_output((<span class="keyword">char</span> *)currentTCB-&gt;data, datalen, PACKET_TYPE_DATA,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line">        <span class="comment">// 等待对方回复</span></span><br><span class="line">        TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        <span class="keyword">int</span> len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 调用stud_tcp_input处理</span></span><br><span class="line">        <span class="keyword">return</span> stud_tcp_input((<span class="keyword">char</span> *)tcp, len, htonl(currentTCB-&gt;srcAddr), htonl(currentTCB-&gt;dstAddr));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="实现stud-tcp-recv"><a href="#实现stud-tcp-recv" class="headerlink" title="实现stud_tcp_recv"></a>实现<code>stud_tcp_recv</code></h4><p>在该函数中，等待一个对方发来的包并进行处理</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_recv</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">unsigned</span> <span class="keyword">char</span> *pData, <span class="keyword">unsigned</span> <span class="keyword">short</span> datalen, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 等待对方发来的包</span></span><br><span class="line">        TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        <span class="keyword">int</span> len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">memcpy</span>(pData, tcp-&gt;data, len);</span><br><span class="line">        <span class="comment">// 调用stud_tcp_input处理</span></span><br><span class="line">        <span class="keyword">return</span> stud_tcp_input((<span class="keyword">char</span> *)tcp, len, htonl(currentTCB-&gt;srcAddr), htonl(currentTCB-&gt;dstAddr));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="实现stud-tcp-close"><a href="#实现stud-tcp-close" class="headerlink" title="实现stud_tcp_close"></a>实现<code>stud_tcp_close</code></h4><p>在本函数中，要注意关闭连接时的四次握手，需要注意我们的顺序问题。</p>
+<p>首先，应当调用<code> stud_tcp_output</code>发送一个<code>flag</code>为<code>PACKET_TYPE_FIN_ACK</code>的请求，之后对方会先发来一个<code>PACKET_TYPE_ACK</code>的包，接收到之后会进入<code>FIN_WAIT2</code>状态，然后需要继续等待对方发送的包，收到<code>PACKET_TYPE_FIN_ACK</code>才正式关闭，因此这里应该等待两次。实现如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_close</span><span class="params">(<span class="keyword">int</span> sockfd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line">	<span class="comment">// 在ESTABLISHED状态才能结束</span></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        stud_tcp_output(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_FIN_ACK,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line">		<span class="comment">// 等待ACK</span></span><br><span class="line">        TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        <span class="keyword">int</span> len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        stud_tcp_input((<span class="keyword">char</span> *)tcp, len, htonl(currentTCB-&gt;srcAddr), htonl(currentTCB-&gt;dstAddr));</span><br><span class="line">		</span><br><span class="line">        <span class="comment">// 等待FIN_ACK</span></span><br><span class="line">        tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = waitIpPacket((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> stud_tcp_input((<span class="keyword">char</span> *)tcp, len, htonl(currentTCB-&gt;srcAddr), htonl(currentTCB-&gt;dstAddr));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此，各实验函数编写完成，并且在系统上测试通过。</p>
+<h2 id="实验中遇到的问题"><a href="#实验中遇到的问题" class="headerlink" title="实验中遇到的问题"></a>实验中遇到的问题</h2><ol>
+<li>实验指导书上很多比较细节的地方都没说到，例如函数输入参数的字节序问题，在之前的<code>ipv4</code>实验中，参数中的<code>ip</code>地址是本地序，这次要求的<code>stud_tcp_input</code>的参数就成了网络序，但是提供的接口函数<code>tcp_sendIpPkt</code>还是本地序，我之前在宿舍自己写的时候觉得这两个地方要么都网络序要么都本地序，因为之前也是这样，但是去了之后因为这个问题头疼了半天。</li>
+<li>实验指导书上有一些矛盾的地方，给出的一些函数（例如<code>tcp_DiscardPkt</code>）其实一直没用到，有些迷惑。</li>
+</ol>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><p>完整代码再次给出（包括了用于debug的语句等）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br><span class="line">335</span><br><span class="line">336</span><br><span class="line">337</span><br><span class="line">338</span><br><span class="line">339</span><br><span class="line">340</span><br><span class="line">341</span><br><span class="line">342</span><br><span class="line">343</span><br><span class="line">344</span><br><span class="line">345</span><br><span class="line">346</span><br><span class="line">347</span><br><span class="line">348</span><br><span class="line">349</span><br><span class="line">350</span><br><span class="line">351</span><br><span class="line">352</span><br><span class="line">353</span><br><span class="line">354</span><br><span class="line">355</span><br><span class="line">356</span><br><span class="line">357</span><br><span class="line">358</span><br><span class="line">359</span><br><span class="line">360</span><br><span class="line">361</span><br><span class="line">362</span><br><span class="line">363</span><br><span class="line">364</span><br><span class="line">365</span><br><span class="line">366</span><br><span class="line">367</span><br><span class="line">368</span><br><span class="line">369</span><br><span class="line">370</span><br><span class="line">371</span><br><span class="line">372</span><br><span class="line">373</span><br><span class="line">374</span><br><span class="line">375</span><br><span class="line">376</span><br><span class="line">377</span><br><span class="line">378</span><br><span class="line">379</span><br><span class="line">380</span><br><span class="line">381</span><br><span class="line">382</span><br><span class="line">383</span><br><span class="line">384</span><br><span class="line">385</span><br><span class="line">386</span><br><span class="line">387</span><br><span class="line">388</span><br><span class="line">389</span><br><span class="line">390</span><br><span class="line">391</span><br><span class="line">392</span><br><span class="line">393</span><br><span class="line">394</span><br><span class="line">395</span><br><span class="line">396</span><br><span class="line">397</span><br><span class="line">398</span><br><span class="line">399</span><br><span class="line">400</span><br><span class="line">401</span><br><span class="line">402</span><br><span class="line">403</span><br><span class="line">404</span><br><span class="line">405</span><br><span class="line">406</span><br><span class="line">407</span><br><span class="line">408</span><br><span class="line">409</span><br><span class="line">410</span><br><span class="line">411</span><br><span class="line">412</span><br><span class="line">413</span><br><span class="line">414</span><br><span class="line">415</span><br><span class="line">416</span><br><span class="line">417</span><br><span class="line">418</span><br><span class="line">419</span><br><span class="line">420</span><br><span class="line">421</span><br><span class="line">422</span><br><span class="line">423</span><br><span class="line">424</span><br><span class="line">425</span><br><span class="line">426</span><br><span class="line">427</span><br><span class="line">428</span><br><span class="line">429</span><br><span class="line">430</span><br><span class="line">431</span><br><span class="line">432</span><br><span class="line">433</span><br><span class="line">434</span><br><span class="line">435</span><br><span class="line">436</span><br><span class="line">437</span><br><span class="line">438</span><br><span class="line">439</span><br><span class="line">440</span><br><span class="line">441</span><br><span class="line">442</span><br><span class="line">443</span><br><span class="line">444</span><br><span class="line">445</span><br><span class="line">446</span><br><span class="line">447</span><br><span class="line">448</span><br><span class="line">449</span><br><span class="line">450</span><br><span class="line">451</span><br><span class="line">452</span><br><span class="line">453</span><br><span class="line">454</span><br><span class="line">455</span><br><span class="line">456</span><br><span class="line">457</span><br><span class="line">458</span><br><span class="line">459</span><br><span class="line">460</span><br><span class="line">461</span><br><span class="line">462</span><br><span class="line">463</span><br><span class="line">464</span><br><span class="line">465</span><br><span class="line">466</span><br><span class="line">467</span><br><span class="line">468</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* THIS FILE IS FOR TCP TEST</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">struct sockaddr_in &#123;</span></span><br><span class="line"><span class="comment">        short   sin_family;</span></span><br><span class="line"><span class="comment">        u_short sin_port;</span></span><br><span class="line"><span class="comment">        struct  in_addr sin_addr;</span></span><br><span class="line"><span class="comment">        char    sin_zero[8];</span></span><br><span class="line"><span class="comment">&#125;;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;sysInclude.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;vector&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DEBUG</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> DEBUG</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DebugPrint(...) printf(__VA_ARGS__)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> DebugPrint(...)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="comment">// ?</span></span><br><span class="line"><span class="keyword">int</span> gSrcPort = <span class="number">2005</span>;</span><br><span class="line"><span class="keyword">int</span> gDstPort = <span class="number">2006</span>;</span><br><span class="line"><span class="keyword">int</span> gSeqNum = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> gAckNum = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 外部函数声明</span></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">tcp_DiscardPkt</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">int</span> type)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">tcp_sendReport</span><span class="params">(<span class="keyword">int</span> type)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">void</span> <span class="title">tcp_sendIpPkt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *pData, UINT16 len, <span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr, <span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr, UINT8 ttl)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">waitIpPacket</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">int</span> timeout)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">getIpv4Address</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">getServerIpv4Address</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TCP的头占20个字节</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> TCP_HEADER_LENGTH = <span class="number">20</span>;</span><br><span class="line"><span class="comment">// TCP协议号</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> TCP_PROTOCOL_NUM = <span class="number">0x6</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TCP结构</span></span><br><span class="line"><span class="comment">// 永远用网络序！！</span></span><br><span class="line"><span class="comment">// 永远用网络序！！</span></span><br><span class="line"><span class="comment">// 永远用网络序！！</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TCP</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint16_t</span> srcPort;</span><br><span class="line">    <span class="keyword">uint16_t</span> dstPort;</span><br><span class="line">    <span class="keyword">uint32_t</span> seqNum;</span><br><span class="line">    <span class="keyword">uint32_t</span> ackNum;</span><br><span class="line">    <span class="keyword">uint8_t</span> headLen;</span><br><span class="line">    <span class="keyword">uint8_t</span> flags;</span><br><span class="line">    <span class="keyword">uint16_t</span> windowSize;</span><br><span class="line">    <span class="keyword">uint16_t</span> checkSum;</span><br><span class="line">    <span class="keyword">uint16_t</span> urgentPointer;</span><br><span class="line">    <span class="keyword">char</span> data[<span class="number">2000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">debugPrint</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> DEBUG</span></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;=========== tcp struct info ===========\n&quot;</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;srcPort = %d\n&quot;</span>, <span class="built_in">ntohs</span>(srcPort));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;dstPort = %d\n&quot;</span>, <span class="built_in">ntohs</span>(dstPort));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;seqNum = %d\n&quot;</span>, <span class="built_in">ntohl</span>(seqNum));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;ackNum = %d\n&quot;</span>, <span class="built_in">ntohl</span>(ackNum));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;headLen = %d\n&quot;</span>, ((headLen &gt;&gt; <span class="number">4</span>) &amp; <span class="number">0xf</span>));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;flags = %d\n&quot;</span>, flags);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;windowSize = %d\n&quot;</span>, <span class="built_in">ntohl</span>(windowSize)));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;checkSum = %d\n&quot;</span>, <span class="built_in">ntohl</span>(checkSum));</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;urgentPointer = %d\n&quot;</span>, <span class="built_in">ntohl</span>(urgentPointer));</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// TCP状态</span></span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">TCPStatus</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    CLOSED,</span><br><span class="line">    SYN_SENT,</span><br><span class="line">    ESTABLISHED,</span><br><span class="line">    FIN_WAIT1,</span><br><span class="line">    FIN_WAIT2,</span><br><span class="line">    TIME_WAIT</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 传输控制快</span></span><br><span class="line"><span class="comment">// 这是保存在本机的结构，永远用主机序！！！</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">TCB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> sockfd;             <span class="comment">// 套接字描述符</span></span><br><span class="line">    <span class="keyword">uint32_t</span> srcAddr;       <span class="comment">// 源地址</span></span><br><span class="line">    <span class="keyword">uint16_t</span> srcPort;       <span class="comment">// 源端口</span></span><br><span class="line">    <span class="keyword">uint32_t</span> dstAddr;       <span class="comment">// 目的地址</span></span><br><span class="line">    <span class="keyword">uint16_t</span> dstPort;       <span class="comment">// 目的端口</span></span><br><span class="line">    <span class="keyword">uint32_t</span> seq;           <span class="comment">// seq</span></span><br><span class="line">    <span class="keyword">uint32_t</span> ack;           <span class="comment">// ack</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> ackExpect; <span class="comment">// 应该收到的ack</span></span><br><span class="line">    TCPStatus status;       <span class="comment">// 当前状态</span></span><br><span class="line">    <span class="keyword">char</span> *data;             <span class="comment">// 数据段</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">vector&lt;TCB *&gt; TCBTable;</span><br><span class="line">TCB *currentTCB;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">union</span> <span class="title">IpAddr</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> num;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span></span></span><br><span class="line"><span class="class">    &#123;</span></span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> c1;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> c2;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> c3;</span><br><span class="line">        <span class="keyword">unsigned</span> <span class="keyword">char</span> c4;</span><br><span class="line">    &#125; ip;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">printAddr</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> addr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> DEBUG</span></span><br><span class="line">    <span class="class"><span class="keyword">union</span> <span class="title">IpAddr</span> <span class="title">ip</span>;</span></span><br><span class="line">    ip.num = addr;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d.%d.%d.%d&quot;</span>, ip.ip.c4, ip.ip.c3, ip.ip.c2, ip.ip.c1);</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 约定传来的pBuffer是网络序</span></span><br><span class="line"><span class="comment">// 其他几个应该都是主机序</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="title">getCheckSum</span><span class="params">(<span class="keyword">char</span> *pBuffer,</span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">unsigned</span> <span class="keyword">short</span> len,</span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr,</span></span></span><br><span class="line"><span class="function"><span class="params">                         <span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; In getCheckNum():\n&quot;</span>);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; srcAddr is :&quot;</span>);</span><br><span class="line">    <span class="built_in">printAddr</span>(srcAddr);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;\n---&gt; dstAddr is :&quot;</span>);</span><br><span class="line">    <span class="built_in">printAddr</span>(dstAddr);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> checkSum = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">// 伪头部分</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr_n = <span class="built_in">htonl</span>(srcAddr);</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr_n = <span class="built_in">htonl</span>(dstAddr);</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">short</span> len_n = <span class="built_in">htons</span>(len);</span><br><span class="line">    checkSum += (srcAddr_n &gt;&gt; <span class="number">16</span>) + (srcAddr_n &amp; <span class="number">0xFFFF</span>); <span class="comment">// 源地址</span></span><br><span class="line">    checkSum += (dstAddr_n &gt;&gt; <span class="number">16</span>) + (dstAddr_n &amp; <span class="number">0xFFFF</span>); <span class="comment">// 目标地址</span></span><br><span class="line">    checkSum += (TCP_PROTOCOL_NUM &lt;&lt; <span class="number">8</span>);                  <span class="comment">// TCP协议号</span></span><br><span class="line">    checkSum += len_n;                                    <span class="comment">// TCP长度</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint16_t</span> *TCPBuffer = (<span class="keyword">uint16_t</span> *)pBuffer;</span><br><span class="line">    <span class="comment">// 计算主机序下的len</span></span><br><span class="line">    <span class="comment">// 遍历计算</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; len / <span class="number">2</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (i == <span class="number">8</span>)</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        checkSum += TCPBuffer[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 注意长度的奇偶，要特判奇数</span></span><br><span class="line">    <span class="keyword">if</span> (len % <span class="number">2</span>)</span><br><span class="line">        checkSum += ((<span class="keyword">uint16_t</span>)(pBuffer[len_h]) &lt;&lt; <span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 清除高位</span></span><br><span class="line">    <span class="keyword">while</span> (checkSum &gt;&gt; <span class="number">16</span>)</span><br><span class="line">        checkSum = (checkSum &amp; <span class="number">0xffff</span>) + (checkSum &gt;&gt; <span class="number">16</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Return from getCheckNum(), return value checkSum=%d (hex is %x):\n&quot;</span>, (~checkSum) &amp; <span class="number">0xffff</span>, (~checkSum) &amp; <span class="number">0xffff</span>);</span><br><span class="line">    <span class="comment">// 返回取反的值</span></span><br><span class="line">    <span class="keyword">return</span> (~checkSum) &amp; <span class="number">0xffff</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 传来的是网络序！</span></span><br><span class="line"><span class="comment">// 注意这里的srcAddr和dstAddr也是网络序</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_input</span><span class="params">(<span class="keyword">char</span> *pBuffer, <span class="keyword">unsigned</span> <span class="keyword">short</span> len, <span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr, <span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; In stud_tcp_input():\n&quot;</span>);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; len is %d:\n&quot;</span>, len);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; srcAddr is :&quot;</span>);</span><br><span class="line">    <span class="built_in">printAddr</span>(srcAddr);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;\n---&gt; dstAddr is :&quot;</span>);</span><br><span class="line">    <span class="built_in">printAddr</span>(dstAddr);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    TCP *tcp = (TCP *)pBuffer;</span><br><span class="line">    <span class="comment">// 检查CheckSum</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">getCheckSum</span>(pBuffer, len, <span class="built_in">ntohl</span>(srcAddr), <span class="built_in">ntohl</span>(dstAddr)) != ((TCP *)pBuffer)-&gt;checkSum)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; check sum error\n&quot;</span>);</span><br><span class="line">        tcp-&gt;<span class="built_in">debugPrint</span>();</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; your ans: %d\n&quot;</span>, <span class="built_in">getCheckSum</span>(pBuffer, len, <span class="built_in">ntohs</span>(srcAddr), <span class="built_in">ntohs</span>(dstAddr)));</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; correct ans: %d\n&quot;</span>, tcp-&gt;checkSum);</span><br><span class="line">        <span class="comment">// 实验指导书上没定义这个错误？</span></span><br><span class="line">        <span class="comment">// tcp_DiscardPkt(pBuffer, checksum_error);</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 检查ack</span></span><br><span class="line">    <span class="keyword">uint32_t</span> ackNum = <span class="built_in">ntohl</span>(tcp-&gt;ackNum);</span><br><span class="line">    <span class="keyword">uint32_t</span> seqNum = <span class="built_in">ntohl</span>(tcp-&gt;seqNum);</span><br><span class="line">    <span class="keyword">if</span> (ackNum != currentTCB-&gt;ackExpect)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Error!!! ackNum != currentTCB-&gt;ackExpect\n&quot;</span>);</span><br><span class="line">        <span class="built_in">tcp_DiscardPkt</span>(pBuffer, STUD_TCP_TEST_SEQNO_ERROR);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == SYN_SENT &amp;&amp; tcp-&gt;flags == PACKET_TYPE_SYN_ACK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Status Change: SYN_SENT to ESTABLISHED\n&quot;</span>);</span><br><span class="line">        currentTCB-&gt;status = ESTABLISHED;</span><br><span class="line">        currentTCB-&gt;seq = ackNum;</span><br><span class="line">        currentTCB-&gt;ack = seqNum + <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">stud_tcp_output</span>(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_ACK,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Transfer data at Status ESTABLISHED\n&quot;</span>);</span><br><span class="line">        currentTCB-&gt;seq = ackNum;</span><br><span class="line">        currentTCB-&gt;ack = seqNum + (len - TCP_HEADER_LENGTH);</span><br><span class="line">        <span class="built_in">stud_tcp_output</span>(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_ACK,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == FIN_WAIT1 &amp;&amp; tcp-&gt;flags == PACKET_TYPE_ACK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Status Change: FIN_WAIT1 to FIN_WAIT2\n&quot;</span>);</span><br><span class="line">        currentTCB-&gt;status = FIN_WAIT2;</span><br><span class="line">        currentTCB-&gt;seq = ackNum;</span><br><span class="line">        currentTCB-&gt;ack = seqNum + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == FIN_WAIT2 &amp;&amp; tcp-&gt;flags == PACKET_TYPE_FIN_ACK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Status Change: FIN_WAIT2 to TIME_WAIT\n&quot;</span>);</span><br><span class="line">        currentTCB-&gt;status = TIME_WAIT;</span><br><span class="line">        <span class="built_in">stud_tcp_output</span>(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_ACK,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 约定传来的是网络序！（指pData）</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stud_tcp_output</span><span class="params">(<span class="keyword">char</span> *pData, <span class="keyword">unsigned</span> <span class="keyword">short</span> len, <span class="keyword">unsigned</span> <span class="keyword">char</span> flag, <span class="keyword">unsigned</span> <span class="keyword">short</span> srcPort, <span class="keyword">unsigned</span> <span class="keyword">short</span> dstPort, <span class="keyword">unsigned</span> <span class="keyword">int</span> srcAddr, <span class="keyword">unsigned</span> <span class="keyword">int</span> dstAddr)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; stud_tcp_output():\n&quot;</span>);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; srcAddr is :&quot;</span>);</span><br><span class="line">    <span class="built_in">printAddr</span>(srcAddr);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;\n---&gt; dstAddr is :&quot;</span>);</span><br><span class="line">    <span class="built_in">printAddr</span>(srcAddr);</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentTCB == <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        currentTCB = <span class="keyword">new</span> TCB;</span><br><span class="line">        currentTCB-&gt;status = CLOSED;</span><br><span class="line">        currentTCB-&gt;ack = gAckNum;</span><br><span class="line">        currentTCB-&gt;seq = gSeqNum;</span><br><span class="line">        currentTCB-&gt;srcAddr = srcAddr;</span><br><span class="line">        currentTCB-&gt;dstAddr = dstAddr;</span><br><span class="line">        currentTCB-&gt;srcPort = srcPort;</span><br><span class="line">        currentTCB-&gt;dstPort = dstPort;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">    <span class="built_in">memcpy</span>(tcp-&gt;data, pData, len);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构造TCP头</span></span><br><span class="line">    tcp-&gt;srcPort = <span class="built_in">htons</span>(srcPort);</span><br><span class="line">    tcp-&gt;dstPort = <span class="built_in">htons</span>(dstPort);</span><br><span class="line">    tcp-&gt;seqNum = <span class="built_in">htonl</span>(currentTCB-&gt;seq);</span><br><span class="line">    tcp-&gt;ackNum = <span class="built_in">htonl</span>(currentTCB-&gt;ack);</span><br><span class="line">    <span class="comment">// 注意低四位为空，头长度为5 * 4字节</span></span><br><span class="line">    <span class="comment">// 二进制格式0x10010000</span></span><br><span class="line">    tcp-&gt;headLen = <span class="number">0x50</span>;</span><br><span class="line">    tcp-&gt;flags = flag;</span><br><span class="line">    <span class="comment">// 注意这里也要进行一次字节序转换！</span></span><br><span class="line">    tcp-&gt;windowSize = <span class="built_in">htons</span>(<span class="number">1</span>);</span><br><span class="line">    tcp-&gt;urgentPointer = <span class="number">0</span>;</span><br><span class="line">    tcp-&gt;checkSum = <span class="number">0</span>; <span class="comment">// 预清零checkSum</span></span><br><span class="line">    <span class="comment">// 这里要加上一个长度！！！！！</span></span><br><span class="line">    tcp-&gt;checkSum = <span class="built_in">getCheckSum</span>((<span class="keyword">char</span> *)tcp, len + TCP_HEADER_LENGTH, srcAddr, dstAddr);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == CLOSED &amp;&amp; tcp-&gt;flags == PACKET_TYPE_SYN)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Status Change: CLOSED to SYN_SENT\n&quot;</span>);</span><br><span class="line">        currentTCB-&gt;status = SYN_SENT;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED &amp;&amp; tcp-&gt;flags == PACKET_TYPE_FIN_ACK)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Status Change: ESTABLISHED to FIN_WAIT1\n&quot;</span>);</span><br><span class="line">        currentTCB-&gt;status = FIN_WAIT1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        currentTCB-&gt;ackExpect = currentTCB-&gt;seq + len;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; Status: %d\n&quot;</span>, currentTCB-&gt;status);</span><br><span class="line">        currentTCB-&gt;ackExpect = currentTCB-&gt;seq + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">tcp_sendIpPkt</span>((<span class="keyword">unsigned</span> <span class="keyword">char</span> *)tcp, <span class="number">20</span> + len, currentTCB-&gt;srcAddr, currentTCB-&gt;dstAddr, <span class="number">60</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_socket</span><span class="params">(<span class="keyword">int</span> domain, <span class="keyword">int</span> type, <span class="keyword">int</span> protocol)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; stud_tcp_socket():\n&quot;</span>);</span><br><span class="line">    <span class="comment">// 如果TCB表为空，插入三个NULL</span></span><br><span class="line">    <span class="comment">// socket的返回值应该是一个文件描述符</span></span><br><span class="line">    <span class="comment">// Linux中，文件描述符的0,1,2分别为std_in std_out std_err</span></span><br><span class="line">    <span class="comment">// 所以我们返回的值从3开始</span></span><br><span class="line">    <span class="comment">// 另外，我们希望能根据sockfd直接定位TCB，因此这样实现</span></span><br><span class="line">    <span class="keyword">if</span> (TCBTable.<span class="built_in">empty</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        TCBTable.<span class="built_in">push_back</span>(<span class="literal">NULL</span>);</span><br><span class="line">        TCBTable.<span class="built_in">push_back</span>(<span class="literal">NULL</span>);</span><br><span class="line">        TCBTable.<span class="built_in">push_back</span>(<span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    currentTCB = <span class="keyword">new</span> TCB;</span><br><span class="line">    currentTCB-&gt;ack = gAckNum;</span><br><span class="line">    currentTCB-&gt;seq = gSeqNum;</span><br><span class="line">    currentTCB-&gt;srcPort = gSrcPort++;</span><br><span class="line">    currentTCB-&gt;sockfd = TCBTable.<span class="built_in">size</span>();</span><br><span class="line">    currentTCB-&gt;status = CLOSED;</span><br><span class="line"></span><br><span class="line">    TCBTable.<span class="built_in">push_back</span>(currentTCB);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> currentTCB-&gt;sockfd;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">struct sockaddr_in &#123;</span></span><br><span class="line"><span class="comment">        short   sin_family;</span></span><br><span class="line"><span class="comment">        u_short sin_port;</span></span><br><span class="line"><span class="comment">        struct  in_addr sin_addr;</span></span><br><span class="line"><span class="comment">        char    sin_zero[8];</span></span><br><span class="line"><span class="comment">&#125;;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">struct in_addr &#123;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">    in_addr_t s_addr;</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">&#125;;</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_connect</span><span class="params">(<span class="keyword">int</span> sockfd, struct sockaddr_in *addr, <span class="keyword">int</span> addrlen)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; stud_tcp_connect():\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line"></span><br><span class="line">    currentTCB-&gt;dstPort = <span class="built_in">ntohs</span>(addr-&gt;sin_port);</span><br><span class="line">    currentTCB-&gt;status = SYN_SENT;</span><br><span class="line">    currentTCB-&gt;srcAddr = <span class="built_in">getIpv4Address</span>();</span><br><span class="line">    currentTCB-&gt;dstAddr = <span class="built_in">ntohl</span>(addr-&gt;sin_addr.s_addr);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">stud_tcp_output</span>(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_SYN,</span><br><span class="line">                    currentTCB-&gt;srcPort,</span><br><span class="line">                    currentTCB-&gt;dstPort,</span><br><span class="line">                    currentTCB-&gt;srcAddr,</span><br><span class="line">                    currentTCB-&gt;dstAddr);</span><br><span class="line"></span><br><span class="line">    TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">    <span class="keyword">int</span> len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">    <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">stud_tcp_input</span>((<span class="keyword">char</span> *)tcp, len, <span class="built_in">htonl</span>(currentTCB-&gt;srcAddr), <span class="built_in">htonl</span>(currentTCB-&gt;dstAddr));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_send</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">const</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> *pData, <span class="keyword">unsigned</span> <span class="keyword">short</span> datalen, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; In stud_tcp_input():\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        currentTCB-&gt;data = (<span class="keyword">char</span> *)pData;</span><br><span class="line">        <span class="built_in">stud_tcp_output</span>((<span class="keyword">char</span> *)currentTCB-&gt;data, datalen, PACKET_TYPE_DATA,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line"></span><br><span class="line">        TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        <span class="keyword">int</span> len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">stud_tcp_input</span>((<span class="keyword">char</span> *)tcp, len, <span class="built_in">htonl</span>(currentTCB-&gt;srcAddr), <span class="built_in">htonl</span>(currentTCB-&gt;dstAddr));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_recv</span><span class="params">(<span class="keyword">int</span> sockfd, <span class="keyword">unsigned</span> <span class="keyword">char</span> *pData, <span class="keyword">unsigned</span> <span class="keyword">short</span> datalen, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; In stud_tcp_input():\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        <span class="keyword">int</span> len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">memcpy</span>(pData, tcp-&gt;data, len);</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">stud_tcp_input</span>((<span class="keyword">char</span> *)tcp, len, <span class="built_in">htonl</span>(currentTCB-&gt;srcAddr), <span class="built_in">htonl</span>(currentTCB-&gt;dstAddr));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">stud_tcp_close</span><span class="params">(<span class="keyword">int</span> sockfd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">DebugPrint</span>(<span class="string">&quot;---&gt; In stud_tcp_input():\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    currentTCB = TCBTable[sockfd];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (currentTCB-&gt;status == ESTABLISHED)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">stud_tcp_output</span>(<span class="literal">NULL</span>, <span class="number">0</span>, PACKET_TYPE_FIN_ACK,</span><br><span class="line">                        currentTCB-&gt;srcPort,</span><br><span class="line">                        currentTCB-&gt;dstPort,</span><br><span class="line">                        currentTCB-&gt;srcAddr,</span><br><span class="line">                        currentTCB-&gt;dstAddr);</span><br><span class="line"></span><br><span class="line">        TCP *tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        <span class="keyword">int</span> len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">stud_tcp_input</span>((<span class="keyword">char</span> *)tcp, len, <span class="built_in">htonl</span>(currentTCB-&gt;srcAddr), <span class="built_in">htonl</span>(currentTCB-&gt;dstAddr));</span><br><span class="line"></span><br><span class="line">        tcp = <span class="keyword">new</span> TCP;</span><br><span class="line">        len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        <span class="keyword">while</span> (len == <span class="number">-1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            len = <span class="built_in">waitIpPacket</span>((<span class="keyword">char</span> *)tcp, <span class="number">1000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">stud_tcp_input</span>((<span class="keyword">char</span> *)tcp, len, <span class="built_in">htonl</span>(currentTCB-&gt;srcAddr), <span class="built_in">htonl</span>(currentTCB-&gt;dstAddr));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>Buy me a coffee.</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kinami 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+              <a href="/tags/%E4%BD%9C%E4%B8%9A/" rel="tag"># 作业</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/14/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A6%82%E8%AE%BA%E3%80%8Blab-3-ipv4%E8%B7%AF%E7%94%B1/" rel="prev" title="《计算机网络概论》lab 3 ipv4路由">
+      <i class="fa fa-chevron-left"></i> 《计算机网络概论》lab 3 ipv4路由
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">实验流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E8%A6%81%E6%B1%82"><span class="nav-text">实验要求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%9D%E8%B7%AF"><span class="nav-text">实验思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%86%E8%8A%82"><span class="nav-text">实验细节</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%94%A8%E4%BA%8E%E8%AE%A1%E7%AE%97check-sum%E7%9A%84%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="nav-text">实现用于计算check sum的工具函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-input"><span class="nav-text">实现stud_tcp_input</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-output"><span class="nav-text">实现stud_tcp_output</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-socket"><span class="nav-text">实现stud_tcp_socket</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-connect"><span class="nav-text">实现stud_tcp_connect</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-send"><span class="nav-text">实现stud_tcp_send</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-recv"><span class="nav-text">实现stud_tcp_recv</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0stud-tcp-close"><span class="nav-text">实现stud_tcp_close</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">实验中遇到的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-text">完整代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kinami"
+      src="/images/Tairitsu.jpg">
+  <p class="site-author-name" itemprop="name">kinami</p>
+  <div class="site-description" itemprop="description">普通的CS学生/一般通过音游玩家</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/kinami0331" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kinami0331" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/37836067" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;37836067" rel="noopener" target="_blank"><i class="fa fa-fw fa-video-camera"></i>BiliBili</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kinami</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">43k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">39 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'pJIoHmkcB3a8WcdfueanE5sj-gzGzoHsz',
+      appKey     : 'yk0C7ikU2sxqo09Vq42bkbPd',
+      placeholder: "想说点什么吗……",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
