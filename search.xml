@@ -4,8 +4,20 @@
     <title>haha</title>
     <url>/2021/04/13/haha/</url>
     <content><![CDATA[<h1 id="图片测试"><a href="#图片测试" class="headerlink" title="图片测试"></a>图片测试</h1><p><img src="/2021/04/13/haha/dd7045cc6da4b90fb76b9343ee1ca8e5_1.jpg" alt="dd7045cc6da4b90fb76b9343ee1ca8e5_1"></p>
-<p>这是hkr的头像！</p>
+<p>这是hkr的头像！<br>retry</p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>test action</title>
+    <url>/2021/04/13/test-action/</url>
+    <content><![CDATA[<p>测试https访问</p>
+]]></content>
+      <categories>
+        <category>test</category>
+      </categories>
+      <tags>
+        <tag>test</tag>
+      </tags>
   </entry>
   <entry>
     <title>Hello World</title>
@@ -24,17 +36,5 @@
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
-  </entry>
-  <entry>
-    <title>test action</title>
-    <url>/2021/04/13/test-action/</url>
-    <content><![CDATA[<p>测试https访问</p>
-]]></content>
-      <categories>
-        <category>test</category>
-      </categories>
-      <tags>
-        <tag>test</tag>
-      </tags>
   </entry>
 </search>
