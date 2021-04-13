@@ -6,7 +6,7 @@
   <link href="http://www.kinami.cc/atom.xml" rel="self"/>
   
   <link href="http://www.kinami.cc/"/>
-  <updated>2021-04-13T13:09:11.946Z</updated>
+  <updated>2021-04-13T14:06:39.341Z</updated>
   <id>http://www.kinami.cc/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>加密测试</title>
+    <link href="http://www.kinami.cc/2021/04/13/%E5%8A%A0%E5%AF%86%E6%B5%8B%E8%AF%95/"/>
+    <id>http://www.kinami.cc/2021/04/13/%E5%8A%A0%E5%AF%86%E6%B5%8B%E8%AF%95/</id>
+    <published>2021-04-13T14:00:25.000Z</published>
+    <updated>2021-04-13T14:06:39.341Z</updated>
+    
+    <content type="html"><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="密码错误" data-whm="OOPS, these decrypted content may changed, but you can still have a look.">  <script id="hbeData" type="hbeData" data-hmacdigest="c588f4a33b47b539263a019cb38f2997339b3a6aaec4ded93c853427c94b499c">048188984de7815b47f2ba9bc03cc368e0a70686fe683e7075ccc086f3f50d0bee1327dc61b79b66ca003c8bd9eaf323d0e443ab5368901f6acfae48b23b1f29</script>  <div class="hbe hbe-content">    <div class="hbe hbe-input hbe-input-wave">      <input class="hbe hbe-input-field hbe-input-field-wave" type="password" id="hbePass">      <label class="hbe hbe-input-label hbe-input-label-wave" for="hbePass">        <span class="hbe hbe-input-label-content hbe-input-label-content-wave"></span>      </label>      <svg class="hbe hbe-graphic hbe-graphic-wave" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">        <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>      </svg>    </div>  </div></div><script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+    
+    
+    <summary type="html">该文章已加密，请输入密码查看。</summary>
+    
+    
+    
+    
+    <category term="加密" scheme="http://www.kinami.cc/tags/%E5%8A%A0%E5%AF%86/"/>
+    
+    <category term="哈哈" scheme="http://www.kinami.cc/tags/%E5%93%88%E5%93%88/"/>
+    
+  </entry>
   
   <entry>
     <title>计算机网络概论lab 1 滑动窗口</title>
