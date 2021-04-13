@@ -6,7 +6,7 @@
   <link href="http://www.kinami.cc/atom.xml" rel="self"/>
   
   <link href="http://www.kinami.cc/"/>
-  <updated>2021-04-13T11:10:06.831Z</updated>
+  <updated>2021-04-13T11:56:15.601Z</updated>
   <id>http://www.kinami.cc/</id>
   
   <author>
@@ -21,14 +21,14 @@
     <link href="http://www.kinami.cc/2021/04/13/test-action/"/>
     <id>http://www.kinami.cc/2021/04/13/test-action/</id>
     <published>2021-04-13T08:13:22.000Z</published>
-    <updated>2021-04-13T11:10:06.831Z</updated>
+    <updated>2021-04-13T11:56:15.601Z</updated>
     
-    <content type="html"><![CDATA[<p>测试一下git action</p>]]></content>
+    <content type="html"><![CDATA[<p>测试https访问</p>]]></content>
     
     
       
       
-    <summary type="html">&lt;p&gt;测试一下git action&lt;/p&gt;
+    <summary type="html">&lt;p&gt;测试https访问&lt;/p&gt;
 </summary>
       
     

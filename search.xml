@@ -21,7 +21,7 @@
   <entry>
     <title>test action</title>
     <url>/2021/04/13/test-action/</url>
-    <content><![CDATA[<p>测试一下git action</p>
+    <content><![CDATA[<p>测试https访问</p>
 ]]></content>
       <categories>
         <category>test</category>
