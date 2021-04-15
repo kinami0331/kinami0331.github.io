@@ -39,7 +39,7 @@ NexT.motion.middleWares = {
     brand && sequence.push({
       e: brand,
       p: {opacity: 1},
-      o: {duration: 100}
+      o: {duration: 200}
     });
 
     function getMistLineSettings(element, translateX) {
@@ -47,7 +47,7 @@ NexT.motion.middleWares = {
         e: element,
         p: {translateX},
         o: {
-          duration     : 200,
+          duration     : 500,
           sequenceQueue: false
         }
       };
@@ -57,7 +57,7 @@ NexT.motion.middleWares = {
       sequence.push({
         e: image,
         p: {opacity: 1, top: 0},
-        o: {duration: 100}
+        o: {duration: 200}
       });
     }
 
@@ -72,13 +72,13 @@ NexT.motion.middleWares = {
     title && sequence.push({
       e: title,
       p: {opacity: 1, top: 0},
-      o: {duration: 100}
+      o: {duration: 200}
     });
 
     subtitle && sequence.push({
       e: subtitle,
       p: {opacity: 1, top: 0},
-      o: {duration: 100}
+      o: {duration: 200}
     });
 
     (CONFIG.scheme === 'Pisces' || CONFIG.scheme === 'Gemini') && image && pushImageToSequence();
@@ -100,7 +100,7 @@ NexT.motion.middleWares = {
   menu: function(integrator) {
     Velocity(document.querySelectorAll('.menu-item'), 'transition.slideDownIn', {
       display : null,
-      duration: 100,
+      duration: 200,
       complete: function() {
         integrator.next();
       }
