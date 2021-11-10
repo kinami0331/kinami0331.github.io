@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.kinami.cc","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="OpenJudge上的问题汇总，不断更新中，有问题的时候可以先来看一眼">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OJ上的注意事项汇总">
+<meta property="og:url" content="http://www.kinami.cc/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:site_name" content="kinami&#39;s">
+<meta property="og:description" content="OpenJudge上的问题汇总，不断更新中，有问题的时候可以先来看一眼">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-11-10T17:38:38.000Z">
+<meta property="article:modified_time" content="2021-11-10T18:25:43.182Z">
+<meta property="article:author" content="kinami">
+<meta property="article:tag" content="计算概论C(21 fall)">
+<meta property="article:tag" content="计算概论C">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://www.kinami.cc/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>OJ上的注意事项汇总 | kinami's</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="kinami's" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">kinami's</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">一点微小的贡献</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://www.kinami.cc/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Tairitsu.jpg">
+      <meta itemprop="name" content="kinami">
+      <meta itemprop="description" content="普通的CS学生/一般通过音游玩家">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kinami's">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OJ上的注意事项汇总
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-11-11 01:38:38 / 修改时间：02:25:43" itemprop="dateCreated datePublished" datetime="2021-11-11T01:38:38+08:00">2021-11-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC/" itemprop="url" rel="index"><span itemprop="name">计算概论C</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC-21-fall/" itemprop="url" rel="index"><span itemprop="name">计算概论C(21 fall)</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>718</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+            <div class="post-description">OpenJudge上的问题汇总，不断更新中，有问题的时候可以先来看一眼</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="密码错误" data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="8f461a108ade8afb4eebb5c9247b8b418c3deb0e470e85752b5201b7250b6071">b1c8743748ae1f554aaae721c1205cc441f57087a8f982dede0aaaefeeadf341f2761f414131dfff5b0024474bad5ff548050b2713d029b4ebcf5a8c466ba2ae928fd079b2512459c0275fb85ef6660b291a88524ab06109c417a0f01d0c99d121c8c31f60713c753f595247a4a2f8c940c43873f01e7dfda10c8d13e8885d7a05e2e0029989f9cb64c658910c74e01281468d994e165f6896a252a509dd25ee0add12525637ce9d41deb2621288026f82344abe56cf402344d70b85d12b96d3878ed84a06893877af35d81dcf0a8590f6e79e596f4170124175958e068f9da3afb61e0de931d1f177de219fe72f1ea9e9289380374286fc70c4ac2e176961e64f57a6bddcd0b29ad2ef1c13efd9d031bec22458c228838ce229b95bebe08023a31c8b84bf5fee8579abcd73365167c594cd0e5aa2fc8691b0fcff753004b9e7d3b80892274cc3af8db12334a3c82b70bd546b893d516903ae35048e0d6770f31034923999de6a1b3c61b6fe8801cd2fc333d03f0a17728eeb02228fad1ec40d9184b4c8a74ec93dc0e62fd7eee6f8738ebe4b58b09b27ad1b0b42775d0a345541e577aa1cffa5ad795d898ec84d67a3525288eee4c8bfabc4a6f506aa2c711341e685fcd510357a4f7ba47829937b0fe8e265dc266d2491ea2e2882c3521ba6e9d587b7cc6112168b07116dd635063ffa74122786f1f268c58fa85ef12429975e43d941ff281fca1efe1ddeea87d80fef323d6569bd4134432b7d708dab76065d85bd6ff3b875d84be97aac9f69f28e65e1dc9116ec6fb7c802921ef23e1cf2e6ee862f699c171ef5e9d912d6304f81454f94a0f8436f1382e39660bc694402858a640855c3b7fa65922a48e42fc4d9c20257359c08da1aff1cf1f0fde73a15ef3fd875bbccc3dee2c31b4f0cb7de735511efb168b11555b70937a35c765dfc3380e0f762662599c9236ad084c1e31f9abf8bbe892ff125ffadd1d0ef91d5b06334dc2edd847a9a647661312cee026eef7eee11da12c501df83187b46b758848dc11107a990a2234c9e511b3e8075da69e644083b92d1bc46d99b2ef9c117900c8201f9e75977aec4b06b076eebd182e4799d2fb825ef886e341dd0d8c49eca7f653bb16e5e383b275c7bb122a45ab4b5549a1752eb2ea2c1bc9ae745722dfd3281a8ca01b9c712fba07861025eedf1510f6456cc21237d74779d79b0e2913aa9cc39de60930144a909ad171bed9a0b2feb804b15d90e7ab62289bf94d8b10efbc8bed6a0c5658880052f0d45c48867db291cc4dad206081d535938781f60bcdfe0554ad661b7802608c00ad1746df65272ff3c0355154d1ce3574d9d2a0a9986c95a5c0307668c4b9c299295035aff909dd0cbdcd7a0bb2eb3c2ff2f5effe3ca2651ee11770f6b13d3ffc69eb4d92d8ec9ce480f60f5a7b4301307bb191f7eb545103870b14027928f17d88f88777a97b82ef7bcfb272b221dd15ccbf1e30c6618cb1e4420e6cfabc9809350b0ed2ecb789066c4c68b8c78485291afe0c9cd29cb51d8ca7d86ee78c3cb11f1e435f9bfb867b40896bbd5fd8e6e725a5f9fa122221a3cc3b8b3059fc8fdd821c9b610decf44288c031e6c0f3e9b0e871a9ca9493f6f59560b4f1a16ecdbdd91ca0089caae15fc48324e9ce58019832eb32f5abe68c8ce72e5a9da7fe8d59f1b591b35aee92d729e2698c37dd55fe64e92ce4aacc16fc0ffb2020f0092001837aab79a055a39504b32668aae4609718100f38defff6c88c638195034000c237b0f5ec1b10e5532c2e9f645528014e5149c09b947b7d9004f9489892a6fb098ec24bdcd77c9081de3630688223e4a54f3f74d55cd57b918fe929f8e277e95e387ce7718ae83d763be0789814be72d134a5cd8faadc0219a8a384d8a065b6f1b5d9c5e1383ff1f76e7d2c36cbf0cec52e42a77e23cce73ac616fcd3eeaa3e1cd8fa303262a747c9232c3f7907e5ef644023c84ee4f8bdf35134f24906fa6906dc3f533d1f13ccaedf3cddbd1625d75e5d8a576f372e875ca4678207bd8d5a61370834d38e8064486cd3cb4ce00b38c388c094e5f05555735e188db73dc90028ed3ab15589006d341011fca4783d0250108eeb55cd5d972c83a52a2c937402dc21fa3b0bf48bc471237a02b9f046b8d65205e0ebf11c20af72a317637ec848ab7b2fe791dbf48ee4eec3b2bcdab371d8421c45b52f8756c651f97ed98c39ca84949211ac038a4f33a8f053bf8299c44fc972710b12dedffc73b0fb3846e23ede593af677b1de61b3511d4bd7dece3c3a084a4be26ea1138d8d40708766edfbdd17abf377400b3e5524c643647c460009d29de1c4bf779db60e94c440255b204a90db1e11adcbe5a896cf472e12dbe5cc20df5bf81a7dee62e0215d12ebb26bfe60e37d7af8cbba59723534f81911a3c00465786a6685081a74d5d403dee1c6eb9fe8abe55dac4eee77e75be88d11c967c558545b166c38327c0e0161ba02359c1ce782a247873c6ed3af5a9e34d74e072e9d353ec4a152371c8b5c5213c3a19ea4f19373508e80db9b339e50930df5feb49955d69d9f9760e7498499410d031015c9d98757e42d0b17fb2c21e2f6ff2c723d9aec7026cdf916bd48630dc86f437dfaa83cbcb41265b38e6ec24d8c390852253a1ef6eab0c2ea5c5246869222e603b7d9e29cefadba44f34bdc8536192d8e7e65783ce947951c95b8170d5200f4c5b40439d5137ddd53f6b24809c16f355c45b5808d5757bc02465951b9e02ab25baed0abd891faeccfe5d39bc6279cc52957ef89aa3013cc21e8a5f3dfbf582e39b4412359a16af30763f0b3891a42fa54a2dc3e5c9c8da74e8aecc7946f8a1f5da077a72398082510a8fa4f556cba3371437bcbbd95342468af4d65aeeb12a555ae97b88827ca6b1bba58c821d7bf94db1d85fb7fea9df65504d71d35740456580105af946ec3de01bef7737b80db48397dbcaec1f896b8f8b7ecf4a5ce06624d3253ead0b4e9ed75473ae74e909b20f844946f4d5039b9db5e845caa5572e3c73c0948bcbc28f06c55af368b7f5b5d4e4a166f0235ee62f25ea83965b947a0f7426bf822a7067c120446c8dce7a389842bd909104d34d2007479279ec9c1599efbef9daad8ee838182ab55bc8625de071f2b30cc53fcac8086aca0b77d65036d11c2637a1672176d9d4de139f9ed10bab52fb0adbb793f08188626b5189ecd387e6a5c2d5ea54e5b38c1d2cfd04c10c55e51f8f127c8cf17ed3439309e18cdf7bd3725570c49c12d6ed9167cb7d2e7747f5793bfeedf957e135b5b8ff65cac377ceee6ee8d7ea6e8119297241a0e0bad0cc7c171dc0143c1deba469447fc10644053564a657ad7382ae2aaf22b4fd4b346c77490f199d36409ebf43303929c81f2437ede1de888877757a77daf07368cb7b59b970cad5384a999c075f1f39b9842b97ce5f48a3da08f942d317328260ce89681ec70fda078be326e70eeaf5ee702adf0c90d55876e5948693bbf01af839812eefed5add1821aed523f61178bd4998fd6c5d02a4b2dfddef928f3ffe7892db9aefc92350d62c46b6fcb1c38f3479bf9e198d9ddc37795642d4a28eecad8d5ec92903f268d46119176e9b2267af90b929d33b71a56408faf4455ee869b53d98d804787721075ebfbf3556f97be5a4ea4c1d8052e67d432830b89bbde56291d656d6052877c2b28913ef03082f84e7279666b1cdb72ab30399885e95212f027e586d3bed9061ef92ee6cc8d84e4517c987a7e3ed02b3b8d2ca73efd7f8fd7522d263be557efc76204452e9cda01c28ae0a17d9a7ca957b4f8562f6e4f493007a534210f3278162386bd0bf077f0a829a156681c26ba6d6976fa21bc789bc2cd7a03bc1d646eb157a58c5464c0f24997dcd6438d0f8a3ca52d9c9f3c88bfa6e3a53420ed65e75b6541c08040e4811092270fc6f60f6c189bd517c6d1a3fb506619f05c04a8c2b3236e6f2f300e29ea1df684b2ca301dafede0b7b47fafe973c2e1d5d1c0b440084785a516eb82bb9c99f5e900b5ae7d65bd9c844c6009f1a8d23729def9fd255031f26530dfd0fccb0f8806192b6d91172a1417a64e987d6ccb763d2f56ebe3ee01cecc77de6f184afcef81eb0b48be7cc4812f82e61297f39e57b31f58bb39db575d5d1fa431a021fafb47212a6d31efd828e20c5478dc884a5d9b1597849a3d7811b20051afdd698aad21c3e73c0351ccc2441ffaed7a2d6f805077b0a4bb4e675e7a646393373d9a9a279d63597ec837d79be081944919009738ce9ff47e08f996bbfec609bb151f86332caf99a23ec8994522f998a96f48cad88a389a14f96b37201dfd915bd0b0cafb41cb18a45a8ffa31dd1d341d7d43050ce7875606a46989155e2170fae65e17794088664c92402d18eeecea51f2ac8e47e1acf1dfce522adabee82b93a34d87673ff48432668930b21b86abf001def76972ae1979d6f0f22c5a0ee4375496efd92e14afd99e830eeb4e417cdee9deb89b143428eccdc8fe55b31244435f56639347b38f6be100bb2d2a2cd74541d8e93dafa416209482bddc74324ac37175986f2840013f9f45c4fd33de683a2ac817c5f170a028f3b4dfaf75874d55ee2b204d128696ffd17cee2af5d72db638e1183fa3d436759a144acc9c171e038795903fa31cdfe4653ce4d37dca0c46c001a1341baddf43f7f67e202efb30b6dc6c15b073c378bae75a3db3d3db07a5cf53c921ff29820ed2837cf98a0a6ea59167d65441c417ce532c21424b704266b143749b8b3900e60d9290c45d758168d45913a22638f97ecdf6e76a2b68b9a8d9b3ee6951e533d94e174872a6ba6941bc380c51b</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-wave">
+      <input class="hbe hbe-input-field hbe-input-field-wave" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-wave" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-wave"></span>
+      </label>
+      <svg class="hbe hbe-graphic hbe-graphic-wave" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div>Buy me a coffee.</div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    打赏
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wechatpay.jpg" alt="kinami 微信支付">
+        <p>微信支付</p>
+      </div>
+
+  </div>
+</div>
+
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC-21-fall/" rel="tag"># 计算概论C(21 fall)</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC/" rel="tag"># 计算概论C</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/11/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC%E3%80%8B%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%E8%A6%81%E6%B1%82-2021-11-11/" rel="prev" title="《计算概论C》上机作业要求">
+      <i class="fa fa-chevron-left"></i> 《计算概论C》上机作业要求
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <!--其实目录没加密，但是看破不说破-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div id="toc-div" style="display:none">
+            <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#OJ%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB"><span class="nav-text">OJ问题汇总</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#020-%E6%B1%82%E4%B8%80%E5%85%83%E4%BA%8C%E6%AC%A1%E6%96%B9%E7%A8%8B%E7%9A%84%E6%A0%B9"><span class="nav-text">020 求一元二次方程的根</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#023-%E5%A5%A5%E8%BF%90%E5%A5%96%E7%89%8C%E8%AE%A1%E6%95%B0"><span class="nav-text">023 奥运奖牌计数</span></a></li></ol></li></ol></div>
+          </div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="kinami"
+      src="/images/Tairitsu.jpg">
+  <p class="site-author-name" itemprop="name">kinami</p>
+  <div class="site-description" itemprop="description">普通的CS学生/一般通过音游玩家</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://space.bilibili.com/37836067" title="BiliBili → https:&#x2F;&#x2F;space.bilibili.com&#x2F;37836067" rel="noopener" target="_blank"><i class="fa fa-bolt fa-fw"></i>BiliBili</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://github.com/kinami0331" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;kinami0331" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:kinami@kinami.cc" title="E-Mail → mailto:kinami@kinami.cc" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">kinami</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">56k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">51 分钟</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'pJIoHmkcB3a8WcdfueanE5sj-gzGzoHsz',
+      appKey     : 'yk0C7ikU2sxqo09Vq42bkbPd',
+      placeholder: "想说点什么吗……",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
