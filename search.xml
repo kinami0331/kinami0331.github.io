@@ -468,7 +468,55 @@
 <p>关于第2类错误，我也会<strong>随缘</strong>更新点东西进去。</p>
 <p>如果你觉得有什么应该在这里写一下而现在还没写的东西，也可以积极来找助教提建议，建议采纳后会在对应的条目前加一句“来自xx级x同学的提议”。</p>
 <p>随缘更新中。</p>
-<h1 id="1-环境相关的错误"><a href="#1-环境相关的错误" class="headerlink" title="1. 环境相关的错误"></a>1. 环境相关的错误</h1><h1 id="2-语法错误-syntax-error"><a href="#2-语法错误-syntax-error" class="headerlink" title="2. 语法错误 syntax error"></a>2. 语法错误 <code>syntax error</code></h1><h1 id="3-运行时错误"><a href="#3-运行时错误" class="headerlink" title="3. 运行时错误"></a>3. 运行时错误</h1><h1 id="4-一些debug思路示例"><a href="#4-一些debug思路示例" class="headerlink" title="4. 一些debug思路示例"></a>4. 一些debug思路示例</h1>]]></content>
+<h1 id="0-一些基本的知识"><a href="#0-一些基本的知识" class="headerlink" title="0. 一些基本的知识"></a>0. 一些基本的知识</h1><h2 id="请务必学会查看错误提示"><a href="#请务必学会查看错误提示" class="headerlink" title="请务必学会查看错误提示"></a>请务必学会查看错误提示</h2><h3 id="一个语法错误的例子"><a href="#一个语法错误的例子" class="headerlink" title="一个语法错误的例子"></a>一个语法错误的例子</h3><p>相信不少同学都遇到过类似下面这样的报错</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"> File &quot;...（这一长串是你的文件路径）\（这里是你的文件名）.py&quot;, line 5</span><br><span class="line">    for i in range(1,a+1)</span><br><span class="line">                        ^</span><br><span class="line">SyntaxError: invalid syntax</span><br></pre></td></tr></table></figure>
+
+<p>请注意，这个错误提示中给出了足够多的<strong>用于定位错误</strong>的信息。</p>
+<p>第1行，写出了产生错误的文件和行号，有的时候你会看到报错提示中有多个<code>File ....</code>，这与调用栈有关，但是你不需要理解调用栈这个奇怪的词组是什么意思，你<strong>只需要看最后一个<code>File</code>出现的地方</strong>，这个地方一般是你自己写的代码，你看文件名就知道是不是你自己写的了（如果不是，且你看不懂，且本文档中没有写，且你自己也查不到什么资料，在群里问就完事了）。在这一行的末尾，标了一个<code>line 5</code>，意思是这个错误发生在前面这个文件的第5行，非常直观。</p>
+<p>第2行，写出了产生错误的代码，就是上述文件中第5行的那一句代码。</p>
+<p>第3行，是一个箭头，这个箭头你可以理解为<strong>运行到这里的时候发现了错误</strong>，一般来说实际造成错误的代码就在标记的这个地方附近，在本例中，产生错误的位置就是标记的地方，错误原因是少了一个冒号。</p>
+<p>第4行，是错误类型及简单的说明。一般来说都是<code>XxxxError:xxxxxxxx</code>的形式，冒号前面是错误名，冒号后面是关于错误的简单说明。在本例中，<code>SyntaxError</code>就说明了这个错误是一个语法错误，冒号后面的那句话就是“错误的语法”，非常好理解。<strong>如果有不认识的词，可以先查一下</strong>。</p>
+<p>在理想的情况下，我会在本文中更新一些常见的<code>XxxError</code>的说明，前期内容比较少的时候大家也可以积极提建议，我会优先更新出现频率比较高的错误。</p>
+<h3 id="一个运行时错误的例子"><a href="#一个运行时错误的例子" class="headerlink" title="一个运行时错误的例子"></a>一个运行时错误的例子</h3><p>下面是某位同学作业中的代码片段：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    s = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">        s += random.rand()</span><br><span class="line">    average = s/<span class="number">6</span></span><br></pre></td></tr></table></figure>
+
+<p>运行这个片段，会得到如下报错：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;...（这一长串是你的文件路径）\（这里是你的文件名）.py&quot;, line 4, in &lt;module&gt;</span><br><span class="line">    s +&#x3D; random.rand()</span><br><span class="line">AttributeError: module &#39;random&#39; has no attribute &#39;rand&#39;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，这样的错误和语法错误不太一样，例如第1行多了一个<code>Traceback</code>，顾名思义，就是你代码的历史轨迹（因为有的时候实际错误不是在你写的代码的那个地方发生的），这里可能会有若干个<code>File ....</code>，但是正如前面说的，你看最后一个就行。</p>
+<p>第2行和之前看到的一样，只是最后出现了一个<code>in &lt;module&gt;</code>，这里指出了是在哪个模块中产生的错误，你大可不用管。</p>
+<p>第3行写出了产生错误的那一行代码，也是一样的。然后你会发现这里没有了之前语法错误时的那个指示箭头，这是因为语法错误可以很容易的发现在哪一处出错，而运行时错误大多是你某一行的语句产生了错误，因此只写了这一行就够了。</p>
+<p>第4行写出了错误类型，是<code>AttributeError</code>，后面给出了一句简短的描述。如果你不知道这是什么意思，<strong>那么你就可以先来看看这个文档（当然也可以直接上网搜）</strong></p>
+<h2 id="请务必学会使用搜索引擎（以及学会查阅课件及课本）"><a href="#请务必学会使用搜索引擎（以及学会查阅课件及课本）" class="headerlink" title="请务必学会使用搜索引擎（以及学会查阅课件及课本）"></a>请务必学会使用搜索引擎（以及学会查阅课件及课本）</h2><p>举个简单的例子，请看以下代码（可能有些同学对这个代码还挺眼熟的）：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="built_in">print</span>(random.random(<span class="number">0</span>, <span class="number">1</span>))</span><br></pre></td></tr></table></figure>
+
+<p>运行以上代码，报错如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;xxx\text.py&quot;, line 2, in &lt;module&gt;</span><br><span class="line">    print(random.random(1, 2))</span><br><span class="line">TypeError: random() takes no arguments (2 given)</span><br></pre></td></tr></table></figure>
+
+<p>注意第4行的提示，说<code>random()</code>这个方法不接受参数（<code>argument</code>就是我们讲函数时常说的那个参数，更准确的说，指的是实参），后面的括号里说<code>(2 given)</code>意思就是你给了它两个参数，当然，你确实给了它两个参数。</p>
+<p>出现这样的问题，往往说明你这个方法用错了，用错的原因<strong>大概率是老师讲了PPT及课本写了但是你忘了</strong>。这种时候请查阅PPT、课本或者先自己搜索。当然最方便的是自己搜索，搜索教程如下：</p>
+<p>首先打开<a href="https://cn.bing.com/">必应搜索</a>如下：</p>
+<p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111112856612.png" alt="image-20211111112856612"></p>
+<p>一般来说，如果你想查找某个函数或者模块的信息，可以直接输<code>python3 xxxx</code>，其中<code>xxxx</code>是你要查找的函数或者模块。在本例中，你是想知道<code>random</code>模块的<code>random()</code>方法怎么用，那么你可以搜索<code>python3 random.random()</code>，前面使用<code>python3</code>是因为可能会搜到一些<code>python 2.x</code>版本的资料，所以明确一下版本。搜索结果如下：</p>
+<p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113144011.png" alt="image-20211111113144011"></p>
+<p>其中第一个链接是菜鸟教程，这个网站是一个还不错的中文python教程网站（我刚开始速成python的时候就是去翻了一下这个），基本上常见方法都有讲解以及实例，简洁明了。例如第一个链接点进去如下：</p>
+<p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113327191.png" alt="image-20211111113327191"></p>
+<p>相信你一看就能看懂。</p>
+<p>另外，可以看到搜索结果第二条有一个类似的，那里面是<code>python2</code>的教程，所以一定注意，搜索的时候显示的指明：<strong>我要搜<code>python3</code>!</strong></p>
+<p><strong>请注意，推荐用搜索引擎并不是助教想偷懒，而是因为一般来说网上都会有非常详细的资料，正如这个例子中所示，有说明有实例，这比我给你说要来的详细很多，毕竟助教也不是行走的文档，我们在自己写代码的时候也时不时要去查一下某个东西怎么用。</strong></p>
+<p>另外，英文好的同学更推荐直接<code>google</code>用用英文搜，例如想搜<code>turtle</code>这个库怎么用，可以直接搜<code>python turtle doc</code>。结果如下：</p>
+<p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113720394.png" alt="image-20211111113720394"></p>
+<p>基本马上就能搜到第一手的官方文档，图中第一个就是。有兴趣的同学可以去看看<a href="https://docs.python.org/3/library/turtle.html">这个链接</a>，里面详细介绍了<code>turtle</code>这个库里都有什么方法。</p>
+<h1 id="1-环境相关的错误"><a href="#1-环境相关的错误" class="headerlink" title="1. 环境相关的错误"></a>1. 环境相关的错误</h1><h1 id="2-语法错误-syntax-error"><a href="#2-语法错误-syntax-error" class="headerlink" title="2. 语法错误 syntax error"></a>2. 语法错误 <code>syntax error</code></h1><h1 id="3-运行时的各种错误"><a href="#3-运行时的各种错误" class="headerlink" title="3. 运行时的各种错误"></a>3. 运行时的各种错误</h1><h2 id="AttributeError"><a href="#AttributeError" class="headerlink" title="AttributeError"></a><code>AttributeError</code></h2><p>继续用在第0部分使用过的这个示例代码：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    s = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">        s += random.rand()</span><br><span class="line">    average = s/<span class="number">6</span></span><br></pre></td></tr></table></figure>
+
+<p>运行这个片段，会得到如下报错：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;...（这一长串是你的文件路径）\（这里是你的文件名）.py&quot;, line 4, in &lt;module&gt;</span><br><span class="line">    s +&#x3D; random.rand()</span><br><span class="line">AttributeError: module &#39;random&#39; has no attribute &#39;rand&#39;</span><br></pre></td></tr></table></figure>
+
+<p><code>Arrtibute Error</code>，即属性错误，简单理解就是<strong>这个库里没有这个东西</strong>，这个东西<strong>可能是一个常量</strong>，例如<code>math.pi</code>，<strong>可能是一个函数</strong>，例如<code>random.random()</code>，<strong>可能是一个成员变量</strong>（如果课程中学了<code>class</code>就知道在说什么了）。</p>
+<p>那么到底是什么东西没有呢，请看后面的说明。后面这句话说了模块<code>random</code>中没有<code>rand</code>这个属性，但是你代码中写了<code>random.rand()</code>，这就是错误的原因。</p>
+<p>如何改正：检查拼写错误，看看是不是拼错了，或者干脆就脑补出来一个名字写了上去。</p>
+<h1 id="4-一些debug思路示例"><a href="#4-一些debug思路示例" class="headerlink" title="4. 一些debug思路示例"></a>4. 一些debug思路示例</h1>]]></content>
       <categories>
         <category>计算概论C</category>
       </categories>
