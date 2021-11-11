@@ -21,21 +21,23 @@
     var CONFIG = {"hostname":"www.kinami.cc","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":true,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":true,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="OpenJudge上的问题汇总，不断更新中，有问题的时候可以先来看一眼">
+  <meta name="description" content="简单的讲解了一下浮点数中的精度问题，供有兴趣的同学了解。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OJ上的注意事项汇总 (21 fall)">
-<meta property="og:url" content="http://www.kinami.cc/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/index.html">
+<meta property="og:title" content="专题：浮点数的精度问题">
+<meta property="og:url" content="http://www.kinami.cc/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="kinami&#39;s">
-<meta property="og:description" content="OpenJudge上的问题汇总，不断更新中，有问题的时候可以先来看一眼">
+<meta property="og:description" content="简单的讲解了一下浮点数中的精度问题，供有兴趣的同学了解。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2021-11-10T17:38:38.000Z">
-<meta property="article:modified_time" content="2021-11-10T19:09:30.305Z">
+<meta property="og:image" content="http://www.kinami.cc/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/image-20211111104545769.png">
+<meta property="article:published_time" content="2021-11-11T02:31:00.000Z">
+<meta property="article:modified_time" content="2021-11-11T02:48:36.943Z">
 <meta property="article:author" content="kinami">
-<meta property="article:tag" content="计算概论C(21 fall)">
 <meta property="article:tag" content="计算概论C">
+<meta property="article:tag" content="计算概论C专题">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://www.kinami.cc/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/image-20211111104545769.png">
 
-<link rel="canonical" href="http://www.kinami.cc/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/">
+<link rel="canonical" href="http://www.kinami.cc/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/">
 
 
 <script id="page-configurations">
@@ -48,7 +50,7 @@
   };
 </script>
 
-  <title>OJ上的注意事项汇总 (21 fall) | kinami's</title>
+  <title>专题：浮点数的精度问题 | kinami's</title>
   
 
 
@@ -194,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://www.kinami.cc/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/">
+    <link itemprop="mainEntityOfPage" href="http://www.kinami.cc/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/Tairitsu.jpg">
@@ -207,7 +209,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          OJ上的注意事项汇总 (21 fall)
+          专题：浮点数的精度问题
         </h1>
 
         <div class="post-meta">
@@ -218,7 +220,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-11-11 01:38:38 / 修改时间：03:09:30" itemprop="dateCreated datePublished" datetime="2021-11-11T01:38:38+08:00">2021-11-11</time>
+              <time title="创建时间：2021-11-11 10:31:00 / 修改时间：10:48:36" itemprop="dateCreated datePublished" datetime="2021-11-11T10:31:00+08:00">2021-11-11</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -227,10 +229,6 @@
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC/" itemprop="url" rel="index"><span itemprop="name">计算概论C</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC-21-fall/" itemprop="url" rel="index"><span itemprop="name">计算概论C(21 fall)</span></a>
                 </span>
             </span>
 
@@ -250,8 +248,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/11/OJ%E4%B8%8A%E7%9A%84%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9%E6%B1%87%E6%80%BB/" itemprop="commentCount"></span>
+    <a title="valine" href="/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -261,7 +259,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>770</span>
+              <span>459</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -270,7 +268,7 @@
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
               <span>1 分钟</span>
             </span>
-            <div class="post-description">OpenJudge上的问题汇总，不断更新中，有问题的时候可以先来看一眼</div>
+            <div class="post-description">简单的讲解了一下浮点数中的精度问题，供有兴趣的同学了解。</div>
 
         </div>
       </header>
@@ -281,21 +279,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="密码错误" data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="2338faec55ce5337de4b4546f7fc00cc8673da2398c92e85560159d9955b3d55">b1c8743748ae1f554aaae721c1205cc441f57087a8f982dede0aaaefeeadf341b7deec18777f3bb689e10fbb54111938a7d32a5ff85e36eea0e2ce5a775425afd9e0ba3be51a27ddb954a3072159c9d218994316e6e2c81ac986919257a8275f18c4248cc598e16064f9c0b56b324e7d3563e74015c7334fe351ba42945ed1bd9cf1397503d034a0b231ddf22da3377506ecc88e853b0310bd5fc83f0c0abda459f1ef95f54f7c7f3c505a022d5b3135e0fbca85e93ce1cffee444168a6765a444723a31ba103ea2e25666f8dd6f1e0eec7ed424ec6363d38d1bf1355d2506d85db248fee3c82b2183a823180409ef356bdea0f8935e3df5a156720fe69db65c161ff66a84a63ef4373b96396c8150d03b3f6e11bb0bf67eda358657020ab69541353be7a35c450559f5e45ec0c557f11fea913c1930546011d6d9335f19827bd1d542779da8d31900083d72f293ca95203e1273573dcb120e3ecb8dad3ef64fbc85d028c055c7d74045e0a19d34a80efcec0b456015cf6c06b9c1df126f833b3bae3bc1ca78968663b7850d6d3a1a423497398cc3ca5d97072f86f627b112810f4aba8a284881e30f769ff397580919f2872c6565f2d4a69170869b0af5246b9a6101b3d40337efb18501256ebe4d61e113f221ac0a7ff56807cd3e7145fb020fd6e22215cc3f04c2c5dcb7b3a2398431358e707af7502a6960dc4c917ad9e911e01926b8d58a5f80693f2fd4ebbeca0e32a0506a74eb89ba8df4c6a6c49085d13a8b784d18e0f5d54c44eff1bf3e6a62b1a2687daaee63cc7017676b902372cb1c8d602491a966ff794f2631c6a2c960b538c850c9f818a2f2cd3786b861d92be6ddbf91c5f8b07db994d83f4e4245261a1bfc6ed27e23a3e0987d56c116d48fa63c8419ad99559971f446182295d9c005ec0fca9f0be1c6798521af3b6c93a2831f6abce781f709d28345a4c574f711976a2c20c9cb1084cf118331452ce167832c5dfce38191e506087fe1e076c011b0a923a0136e0d6eed7ef61ffc2341f9b9d99d0b772746b27b2dcc1fbd6c9b06718e7f038023337ffb279c15c28ab7b90c7453e5102fb655bfd0dfaf393e2f037d4c3e3a5804ed848576a49519a1d71f1463b274da5a3746c85a5cb893179653e803578258806133643e2d9cb90043c4d1df33846f14d65401f5ae0d0e7c9a5001530fb8a80b2cf5832ea3de05faf08890db9325bff83e1861b79cd307167a182ce0401ec5e96fcb778b1febf529d8f009dd7e0967a0c14c729521e36a713abeb69f9c362b9b80620a4217be3ab357351f9e24dbbc680622d477808bd6535ec303b5bee1a0ab1a4141dc92794e0119fcbf94f8ebd37ae016880020ebd2cb238c559ea9a09f1d6a203a29e49724cedef43da759bc1b7cf09df1dca2c4888b8e0ed1fa95d6561f7635598ae9dad3521a5c9c038a9fa649d8ee51eab12320e7c781a3648a930c0d7278671a5eb74f0ef7bc21428d8dac54a2aee41ad02a62f5c657b709e5a88bedc95bdae919fc56739ffcb9ac8f1d51a212faab107a1022b329a0e29e7f89a1bde610e92a28a79f299c8815ff6ac389acd6dd6c3047f8b674503922500d51e3b865a578e3042096477e610e9fda448991e8b6a07dab5a9bc13efbf32a7ee0c39adc57c9e62a5134539423d588b0e6dceaea856fe5a63953e17fe81d2e0b933131c9477ced25991e36fea7818be794b6fe42136031d1da6893e6e90f0d5ab3836cb6695a3545b97f2fad9d8a68981bf9753db0b7bc37accacc46d9aa6f3df2eed55ef2f92aa7eabaa5a359e14531180bd94b51dadc8a83be42be09d29113d3b2073ac9a9d50ca09276d832aaad84681b0a5e94a6057e6e6f2805203609defaa567fe778911ac6b6ac71ce50e482cf9d05088ca3fc627ce6c1b9acd804805a36294d79029304153d55c1e519ffb43703bd73474538fa8dec19e8971beeb7395027a07b9b0997649d143d0f7ea6c2fc3fa7d6ca1354704b2d19f0882a6f5c7944a6270f11948926f2cd2a025a066c91602cb53d1d5d4ddd5e6332497499223c5de6802e24e733abaa3b4f324cf700a5d8fdb9f7d73c986e81035d9a11a2e887970b4706e679125f206d845f6b4769254164ac91ee17560903844c51231833df92e8e95d092cde2dcd6c3f57160495f747cd4502fc8c49b6307bb0ebbde566fbce5ba6478fb2c76652fbdc113a22b23409a4f7060ec150aa5bd2d019a04ad2f1a74439c686beb5ea292fb00e56abb87656c498794b45c124040b268fb74b7b63c4f2850d8e0bb53d93dd7646eef37cb4c144de0f8d3cb4c0dad05d8f9d34a8332a386455aeea854495ca50060842023cf7296a0bde4f4a07107140018f582a2b7d2160fd0e536f5f5d596c6b1ba24764fc71792caccf485699b1acd515b7e64d9e50d2db20ba224acb39b5c5fb49e92c585664b776c4ecb2c2fe758110fa4d86946b30181e5a578f177d8c26fc8d3c181327a8cbf9aaa12dd1a771484ec7e5cd16770d935ebe2c57df9fc9cb7269ed6187848839097f5923006c5cf926c45c8fb05d9ca877747b0b5b4a812921ce307896dc596513eec38bcfb02be070ce7706b1e166e88f874e391cb43d3ad9b89f3be3abade2e14f7a27f3c04e2dc570df4f7a0dafaa419c8cbb8b1641299dc98a44a613c1d80c6036893ed30684d51aefa3d71efa9c4f4508f1aa51a66f3e88e15ca0c3129184335a626408c33f7fbe7fb8194496f9d4caaf57b0815490fe2ec1dcac35748f066d84ee0c1ac5eff1534cbd3497013d454b73df34922e9adf751d2c46544f6920d86ff2b33284930ec839ea95bc2152658ec2012a3d4c99fabbdefc0242bc9902414fa32ac04243c4f5dbadb510e252c904533b2604eae1b5f58c05f5e7459a33de2b4d5b4e8c25c03dee921d2bd9930e19a437ca1ae009d2a09bceef21132840145de08fef1a931e2cc16fed91333398c6cdeb3bbc4058ebde8c36b03f2e61dd353e5d0e0b0889b220f615d312a94b03128b0408c92ca5f25ae2fca0230686c8d03abb1beece41e6a9325cf99548d1f1e756755fdc3efc8c785d0232b04714061e391ebb357ee3d8407a5c0a252906496e041f93b1b1adc15fe0e4a0b29ea2722baf2775f8c59dc5f463daaf3133cf75f8750dbfc64c331c5e043d67aeb20a369d73cc58b6d3cd73d6c2aa4ef2b7f9cc7d2f8c7df973b9953110790ab4ba06e4ca2030eb4e6cc5412b7a5a716dab891568c077e6bb56df979f2c694f1d0575b4e9b9048ea79272f6b70de114a8d7331308b040b598090d6f1fc6ba5276c95934e8017319149f5af28ad61bea0caa01fa8066a0ba797cf10ed71fd62c381b15c92508538eeb7c93fa9ae2d1f2a272efa0a4ce9ef80cd40980cd030510b086e32e8cb8e08e49b06b9589163ce1fa4f327edb7947aa8d732aecaebf6dde8dd871eb07539ad0c299982e42ae99f69bb1ecb5e7d44e3705f98fd079c3537edbc4fa15aafb88ee4dcf03430754f089aba9969edd89a6c2fc0a41032877569404e50abe3d5106434bef79fa6936aa999e0d1531050c7970a24b40439eb3a6e4455d177ff3376e5412838c4f6f42c4282c0168aacd746c67f8c8a2c2ae0aed2eb01f88d83e5007fae2c827bdbad493d134a51b11e7cb475359ffe5e2f579b7a0a1debebb063d6762b7fbd7a6ef08db0a7e94fcef61ad45c1b55fb4a5d804ffa95028325c583fd63f98f4ecbdbecf0a3fdc87b7861d888900ab3bd962843c7650c73ad53afd98eeefc5368edfd9c380a1e8c105eeba5d10b1fb5c4999c75c7e5a39c1349a8873303e9fe048f8d5e5ac2af533fad9ad773968d3262d9ee5b3ad69986a08bc2a4d387d603d708cead0774a2a8ca8f6c946b6ba9c97e8a1c511050fb092f792f5ee8e8a06e4a38fa8722cef0c2b131f9c063a11404dd1257a370c7f26de29e063ad77dd54a42cd56ca8fe941a82ff1aaf27dae10b7655efc75207185c6e7a504dfc1b9f1d8cf47a3510ceefeed213db0004569b7c0b9d83e21569569143089965189ba6f259b546aba5ae0aa347b1c988192b8ea47a4d1db02f57dc6a3a8858dc671a364b8a7119f2b2b7bcb3e1d452f72fef3ce2cd3bb3311c534808e2565e2ef318a4a0bc5dd75ac9bbd3e5342b69a46903589ad7ec4985c0adce0efb2b29fdbbe16387afd7dfb99b833e324db26af782ae3f64f07f65612356776035476a820a6adf483cbb4dc349b64816d484f97f1dfeeba6d952b2833a56dc135fa3b652b01f362f0f2ee0a6531c10333d7c3bc9c1a135ce169e9f274d5562182d3c0b31ac6590578e3598cd5d459f4ca7fcbf60f524f4df43910f244278000874fb0e2314de18f81429934a211395a113e8c8496c8acaf1e915619a56d73b9036aba342abe82fc3a9207f0b06f3f91af527f09c1c8cd0b27c4599d6eb73e84b22767dd47b7a5fb6f154d20b8ef2da9d61e0e6573524d3167082a51a1c0564c81edaa40e2c7d090b15ab8271d39578c5580c071708b9bba5a01a4deab2f5d65ff3d0463a23392a413ba6223f04d78c1a0a7767b0424b2feba548b4a1843030659020bf85433ca02b06bdcc9a982848e639f96b134753312f77b0e2ebd3d2e39245e1f819d60ce24f78db1a9397d9fb387492955f029af0519f531c1b001ee240d0bbb3fc796fcf3c92f7176867b6885b522af39b6fa8a905bf7d82109107b21ae4f9fc2b00dea7d6d49253caf56d32f7ecdaafb6d976db0d34b0d28d96d2a46f1f4ceba065cd5850e7687454bcedbd3ff7d20ad190f7f1af0b2ff0108ace64f27a100d2c71778f814a55506b0ed476ca54d6be661ffc23c4645babbce618462e2a9160fd37e1c57687d489a8b9ec2960b92da848e2e9117c24aae2225215e801c8f6f41f2cafdd6a5b72061a2171ac9a9776d3c3e7748f5bff2253d030e1f28b132abac1682c6d8d544b6b11957f67a9bdd705c593e6df7ae808a9db60f6147cba1968167b1e0bb85b05e772e430b837f2f9d37da42e59d75a1368ce38e93e8f6954d6b6dd15ddd31a328943691b4d9bb96557dfa2dba6146086bc63bfd97adba447c63ba643635e2964e3058e96923c36686ccc4db2493fed6</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-wave">
-      <input class="hbe hbe-input-field hbe-input-field-wave" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-wave" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-wave"></span>
-      </label>
-      <svg class="hbe hbe-graphic hbe-graphic-wave" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
-        <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
-      </svg>
-    </div>
-  </div>
-</div>
-<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+        <p>一位同学曾经在群里问了这样一个问题：以下代码的输出为什么没有遵循遇5结果为偶的规则呢？</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">round</span>(<span class="number">3.155</span>,<span class="number">2</span>))</span><br><span class="line"><span class="comment"># 上述语句输出为3.15而不是3.16</span></span><br></pre></td></tr></table></figure>
+
+<p>这是由于计算机表示数的能力有限导致的。我们应该都知道无限循环小数这个概念，在十进制下，许多有理数都是无限循环小数，例如<code>1/3</code>，<code>1/7</code>等。同理，在二进制下，同样有很多有理数也是无限循环小数，例如上面出现的这个<code>3.155</code>，转换成二进制的结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">11.001 00111101011100001010 00111101011100001010 001111...</span><br></pre></td></tr></table></figure>
+
+<p>但是计算机表示一个数的时候，只能用有限的数位来表示，因此有些数字表示成二进制小数后就会被截断，从而比原来的值小（这个大小关系应该是显然的），因此，<code>3.155</code>这个数字在计算机中实际储存的值应该是一个比<code>3.155</code>更小的值，具体的值如下：</p>
+<p><img src="/2021/11/11/%E4%B8%93%E9%A2%98%EF%BC%9A%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E7%B2%BE%E5%BA%A6%E9%97%AE%E9%A2%98/image-20211111104545769.png" alt="image-20211111104545769"></p>
+<p>因此，保留到两位小数之后就会变成<code>3.15</code>而不是<code>3.16</code>。</p>
+<p>这是一个很好的了解浮点数的精度问题的实例，你只要能通过这个例子认识到浮点数的精度问题大概是怎么来的就行了。</p>
+
     </div>
 
     
@@ -304,8 +298,8 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC-21-fall/" rel="tag"># 计算概论C(21 fall)</a>
               <a href="/tags/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC/" rel="tag"># 计算概论C</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC%E4%B8%93%E9%A2%98/" rel="tag"># 计算概论C专题</a>
           </div>
 
         
@@ -314,13 +308,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/11/11/%E3%80%8A%E8%AE%A1%E7%AE%97%E6%A6%82%E8%AE%BAC%E3%80%8B%E4%B8%8A%E6%9C%BA%E4%BD%9C%E4%B8%9A%E8%A6%81%E6%B1%82-2021-11-11/" rel="prev" title="《计算概论C》上机作业要求 (21 fall)">
-      <i class="fa fa-chevron-left"></i> 《计算概论C》上机作业要求 (21 fall)
+    <a href="/2021/11/11/%E6%94%B9%E4%BD%9C%E4%B8%9A%E6%97%B6%E5%8F%91%E7%8E%B0%E7%9A%84%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98/" rel="prev" title="改作业时发现的常见问题 (21 fall)">
+      <i class="fa fa-chevron-left"></i> 改作业时发现的常见问题 (21 fall)
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/" rel="next" title="必读：如何看加密文章">
-      必读：如何看加密文章 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -381,8 +372,7 @@
       <!--noindex-->
       <!--其实目录没加密，但是看破不说破-->
       <div class="post-toc-wrap sidebar-panel">
-          <div id="toc-div" style="display:none">
-            <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#019-%E8%8B%B9%E6%9E%9C%E5%92%8C%E8%99%AB%E5%AD%902"><span class="nav-text">019: 苹果和虫子2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#020-%E6%B1%82%E4%B8%80%E5%85%83%E4%BA%8C%E6%AC%A1%E6%96%B9%E7%A8%8B%E7%9A%84%E6%A0%B9"><span class="nav-text">020: 求一元二次方程的根</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#023-%E5%A5%A5%E8%BF%90%E5%A5%96%E7%89%8C%E8%AE%A1%E6%95%B0"><span class="nav-text">023: 奥运奖牌计数</span></a></li></ol></div>
+          <div id="toc-div">
           </div>
       </div>
       <!--/noindex-->
