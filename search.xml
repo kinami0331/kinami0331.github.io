@@ -507,6 +507,11 @@
 <p>另外，英文好的同学更推荐直接<code>google</code>用用英文搜，例如想搜<code>turtle</code>这个库怎么用，可以直接搜<code>python turtle doc</code>。结果如下：</p>
 <p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113720394.png" alt="image-20211111113720394"></p>
 <p>基本马上就能搜到第一手的官方文档，图中第一个就是。有兴趣的同学可以去看看<a href="https://docs.python.org/3/library/turtle.html">这个链接</a>，里面详细介绍了<code>turtle</code>这个库里都有什么方法。</p>
+<p>（我点进去看了一下发现也是有对应的中文文档的，在<a href="https://docs.python.org/zh-cn/3/library/turtle.html">这个链接</a>，可以看到讲的非常详细了）</p>
+<h2 id="如果你遇到了奇怪的错误"><a href="#如果你遇到了奇怪的错误" class="headerlink" title="如果你遇到了奇怪的错误"></a>如果你遇到了奇怪的错误</h2><p>如果你运行代码，但是在<code>terminal</code>里没有看到与上述报错提示类似的输出，请先尝试重启<code>VS Code</code>，仍然不行的话请在群里提问。</p>
+<p>有一个比较常见的错误，当你发现你的<code>terminal</code>里显示了三个箭头<code>&gt;&gt;&gt;</code>时，如下：</p>
+<p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111120400691.png" alt="image-20211111120400691"></p>
+<p>这是因为你可能无意间启动了一个<code>python</code>解释器环境，在这个环境下你可以直接输入python代码并按回车，这里就会直接输出结果。此时你直接使用<code>F5</code>运行会报错，退出这个环境就好了，可以输入<code>exit()</code>加回车或者<code>ctrl + z</code>（按键盘）加回车来退出，可以自己试试。</p>
 <h1 id="1-环境相关的错误"><a href="#1-环境相关的错误" class="headerlink" title="1. 环境相关的错误"></a>1. 环境相关的错误</h1><h1 id="2-语法错误-syntax-error"><a href="#2-语法错误-syntax-error" class="headerlink" title="2. 语法错误 syntax error"></a>2. 语法错误 <code>syntax error</code></h1><h1 id="3-运行时的各种错误"><a href="#3-运行时的各种错误" class="headerlink" title="3. 运行时的各种错误"></a>3. 运行时的各种错误</h1><h2 id="AttributeError"><a href="#AttributeError" class="headerlink" title="AttributeError"></a><code>AttributeError</code></h2><p>继续用在第0部分使用过的这个示例代码：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    s = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">        s += random.rand()</span><br><span class="line">    average = s/<span class="number">6</span></span><br></pre></td></tr></table></figure>
 

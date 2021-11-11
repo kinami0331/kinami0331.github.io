@@ -32,8 +32,9 @@
 <meta property="og:image" content="http://www.kinami.cc/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113144011.png">
 <meta property="og:image" content="http://www.kinami.cc/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113327191.png">
 <meta property="og:image" content="http://www.kinami.cc/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113720394.png">
+<meta property="og:image" content="http://www.kinami.cc/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111120400691.png">
 <meta property="article:published_time" content="2021-11-10T19:10:14.000Z">
-<meta property="article:modified_time" content="2021-11-11T03:51:18.631Z">
+<meta property="article:modified_time" content="2021-11-11T04:07:32.848Z">
 <meta property="article:author" content="kinami">
 <meta property="article:tag" content="计算概论C">
 <meta name="twitter:card" content="summary">
@@ -222,7 +223,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-11-11 03:10:14 / 修改时间：11:51:18" itemprop="dateCreated datePublished" datetime="2021-11-11T03:10:14+08:00">2021-11-11</time>
+              <time title="创建时间：2021-11-11 03:10:14 / 修改时间：12:07:32" itemprop="dateCreated datePublished" datetime="2021-11-11T03:10:14+08:00">2021-11-11</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,14 +262,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>3.7k</span>
+              <span>4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
+              <span>4 分钟</span>
             </span>
             <div class="post-description">汇总一些常见问题，出错了不知道怎么办可以来这里找找思路，也可以在复习时看看。持续更新中。</div>
 
@@ -334,6 +335,11 @@
 <p>另外，英文好的同学更推荐直接<code>google</code>用用英文搜，例如想搜<code>turtle</code>这个库怎么用，可以直接搜<code>python turtle doc</code>。结果如下：</p>
 <p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111113720394.png" alt="image-20211111113720394"></p>
 <p>基本马上就能搜到第一手的官方文档，图中第一个就是。有兴趣的同学可以去看看<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/turtle.html">这个链接</a>，里面详细介绍了<code>turtle</code>这个库里都有什么方法。</p>
+<p>（我点进去看了一下发现也是有对应的中文文档的，在<a target="_blank" rel="noopener" href="https://docs.python.org/zh-cn/3/library/turtle.html">这个链接</a>，可以看到讲的非常详细了）</p>
+<h2 id="如果你遇到了奇怪的错误"><a href="#如果你遇到了奇怪的错误" class="headerlink" title="如果你遇到了奇怪的错误"></a>如果你遇到了奇怪的错误</h2><p>如果你运行代码，但是在<code>terminal</code>里没有看到与上述报错提示类似的输出，请先尝试重启<code>VS Code</code>，仍然不行的话请在群里提问。</p>
+<p>有一个比较常见的错误，当你发现你的<code>terminal</code>里显示了三个箭头<code>&gt;&gt;&gt;</code>时，如下：</p>
+<p><img src="/2021/11/11/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%B1%87%E6%80%BB/image-20211111120400691.png" alt="image-20211111120400691"></p>
+<p>这是因为你可能无意间启动了一个<code>python</code>解释器环境，在这个环境下你可以直接输入python代码并按回车，这里就会直接输出结果。此时你直接使用<code>F5</code>运行会报错，退出这个环境就好了，可以输入<code>exit()</code>加回车或者<code>ctrl + z</code>（按键盘）加回车来退出，可以自己试试。</p>
 <h1 id="1-环境相关的错误"><a href="#1-环境相关的错误" class="headerlink" title="1. 环境相关的错误"></a>1. 环境相关的错误</h1><h1 id="2-语法错误-syntax-error"><a href="#2-语法错误-syntax-error" class="headerlink" title="2. 语法错误 syntax error"></a>2. 语法错误 <code>syntax error</code></h1><h1 id="3-运行时的各种错误"><a href="#3-运行时的各种错误" class="headerlink" title="3. 运行时的各种错误"></a>3. 运行时的各种错误</h1><h2 id="AttributeError"><a href="#AttributeError" class="headerlink" title="AttributeError"></a><code>AttributeError</code></h2><p>继续用在第0部分使用过的这个示例代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    s = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">        s += random.rand()</span><br><span class="line">    average = s/<span class="number">6</span></span><br></pre></td></tr></table></figure>
 
@@ -429,7 +435,7 @@
       <!--其实目录没加密，但是看破不说破-->
       <div class="post-toc-wrap sidebar-panel">
           <div id="toc-div">
-            <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0-%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="nav-text">0. 一些基本的知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E5%8A%A1%E5%BF%85%E5%AD%A6%E4%BC%9A%E6%9F%A5%E7%9C%8B%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA"><span class="nav-text">请务必学会查看错误提示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E8%AF%AD%E6%B3%95%E9%94%99%E8%AF%AF%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-text">一个语法错误的例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E8%BF%90%E8%A1%8C%E6%97%B6%E9%94%99%E8%AF%AF%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-text">一个运行时错误的例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E5%8A%A1%E5%BF%85%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%EF%BC%88%E4%BB%A5%E5%8F%8A%E5%AD%A6%E4%BC%9A%E6%9F%A5%E9%98%85%E8%AF%BE%E4%BB%B6%E5%8F%8A%E8%AF%BE%E6%9C%AC%EF%BC%89"><span class="nav-text">请务必学会使用搜索引擎（以及学会查阅课件及课本）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E7%9B%B8%E5%85%B3%E7%9A%84%E9%94%99%E8%AF%AF"><span class="nav-text">1. 环境相关的错误</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E8%AF%AD%E6%B3%95%E9%94%99%E8%AF%AF-syntax-error"><span class="nav-text">2. 语法错误 syntax error</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E5%90%84%E7%A7%8D%E9%94%99%E8%AF%AF"><span class="nav-text">3. 运行时的各种错误</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AttributeError"><span class="nav-text">AttributeError</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E4%B8%80%E4%BA%9Bdebug%E6%80%9D%E8%B7%AF%E7%A4%BA%E4%BE%8B"><span class="nav-text">4. 一些debug思路示例</span></a></li></ol></div>
+            <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0-%E4%B8%80%E4%BA%9B%E5%9F%BA%E6%9C%AC%E7%9A%84%E7%9F%A5%E8%AF%86"><span class="nav-text">0. 一些基本的知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E5%8A%A1%E5%BF%85%E5%AD%A6%E4%BC%9A%E6%9F%A5%E7%9C%8B%E9%94%99%E8%AF%AF%E6%8F%90%E7%A4%BA"><span class="nav-text">请务必学会查看错误提示</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E8%AF%AD%E6%B3%95%E9%94%99%E8%AF%AF%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-text">一个语法错误的例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E8%BF%90%E8%A1%8C%E6%97%B6%E9%94%99%E8%AF%AF%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-text">一个运行时错误的例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B7%E5%8A%A1%E5%BF%85%E5%AD%A6%E4%BC%9A%E4%BD%BF%E7%94%A8%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E%EF%BC%88%E4%BB%A5%E5%8F%8A%E5%AD%A6%E4%BC%9A%E6%9F%A5%E9%98%85%E8%AF%BE%E4%BB%B6%E5%8F%8A%E8%AF%BE%E6%9C%AC%EF%BC%89"><span class="nav-text">请务必学会使用搜索引擎（以及学会查阅课件及课本）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E4%BD%A0%E9%81%87%E5%88%B0%E4%BA%86%E5%A5%87%E6%80%AA%E7%9A%84%E9%94%99%E8%AF%AF"><span class="nav-text">如果你遇到了奇怪的错误</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E7%8E%AF%E5%A2%83%E7%9B%B8%E5%85%B3%E7%9A%84%E9%94%99%E8%AF%AF"><span class="nav-text">1. 环境相关的错误</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E8%AF%AD%E6%B3%95%E9%94%99%E8%AF%AF-syntax-error"><span class="nav-text">2. 语法错误 syntax error</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E5%90%84%E7%A7%8D%E9%94%99%E8%AF%AF"><span class="nav-text">3. 运行时的各种错误</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AttributeError"><span class="nav-text">AttributeError</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E4%B8%80%E4%BA%9Bdebug%E6%80%9D%E8%B7%AF%E7%A4%BA%E4%BE%8B"><span class="nav-text">4. 一些debug思路示例</span></a></li></ol></div>
           </div>
       </div>
       <!--/noindex-->
@@ -519,7 +525,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">56 分钟</span>
+    <span title="站点阅读时长">57 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
   </div>
