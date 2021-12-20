@@ -745,8 +745,8 @@
 <p>16、</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line">d = &#123;<span class="string">&quot;A&quot;</span>:<span class="string">&quot;a&quot;</span>,<span class="string">&quot;B&quot;</span>:<span class="string">&quot;b&quot;</span>,<span class="string">&quot;C&quot;</span>:<span class="string">&quot;c&quot;</span>,<span class="string">&quot;D&quot;</span>:<span class="string">&quot;d&quot;</span>,<span class="string">&quot;E&quot;</span>:<span class="string">&quot;e&quot;</span>&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f</span>(<span class="params">n</span>):</span></span><br><span class="line">    <span class="keyword">if</span> n&gt; <span class="string">&quot;E&quot;</span> <span class="keyword">or</span> n &lt; <span class="string">&quot;A&quot;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;X&quot;</span></span><br><span class="line">    <span class="keyword">return</span> d[n]</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">6</span>):</span><br><span class="line">    <span class="built_in">print</span>(f(<span class="built_in">chr</span>(i+<span class="built_in">ord</span>(<span class="string">&quot;A&quot;</span>))))</span><br></pre></td></tr></table></figure>
 
-<p>17、一个用到字符串索引和切片的补全代码应用题。小明想用以下程序对输入的数个整数按从大到小排序后输出，但是在输入“123 234 34 9”时发现结果和自己预期的不一样。请说出为什么？你只能在划线处填上一句语句，请帮助小明改正程序。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="built_in">input</span>(<span class="string">&quot;请输入用空格隔开的整数&quot;</span>)</span><br><span class="line">mylist = s.split()</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(mylist)):</span><br><span class="line">    ___________________</span><br><span class="line">mylist.sort(reverse = <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(mylist)</span><br></pre></td></tr></table></figure>
+<p>17、一个用到字符串索引和切片的补全代码应用题。小明想用以下程序对输入的数个整数按从大到小排序后输出，但是在输入“123 234 34 9”时发现结果和自己预期的不一样。请说出为什么？应该如何改正？</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">s = <span class="built_in">input</span>(<span class="string">&quot;请输入用空格隔开的整数&quot;</span>)</span><br><span class="line">mylist = s.split()</span><br><span class="line">mylist.sort(reverse = <span class="literal">True</span>)</span><br><span class="line"><span class="built_in">print</span>(mylist)</span><br></pre></td></tr></table></figure>
 
 <p>18、以下程序输入一个m*n的矩阵，输出它的转置，请补全划线处的代码。矩阵的转置指的是将矩阵的[i, j]元素和[j, i]元素对调，一个例子如下。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">11 12 13 14          11 21 31</span><br><span class="line">21 22 23 24   ---&gt;   12 22 32</span><br><span class="line">31 32 33 34          13 23 33</span><br><span class="line">                     14 24 34</span><br></pre></td></tr></table></figure>
@@ -769,7 +769,15 @@
   <entry>
     <title>python知识点自测部分答案</title>
     <url>/2021/12/20/python%E7%9F%A5%E8%AF%86%E7%82%B9%E8%87%AA%E6%B5%8B%E9%83%A8%E5%88%86%E7%AD%94%E6%A1%88/</url>
-    <content><![CDATA[<h1 id="肉眼debug练习"><a href="#肉眼debug练习" class="headerlink" title="肉眼debug练习"></a>肉眼debug练习</h1><p>1、你不应该不会。</p>
+    <content><![CDATA[<h1 id="综合练习题"><a href="#综合练习题" class="headerlink" title="综合练习题"></a>综合练习题</h1><h2 id="题集1"><a href="#题集1" class="headerlink" title="题集1"></a>题集1</h2><p>13、<code>cnt &gt;= 9</code></p>
+<p>14、<code>s.split(&quot; &quot;)</code>, <code>d[word] += 1</code>, <code>d[word] = 1</code></p>
+<p>17、<code>split()</code>后排序的是字符串。应该加如下两句：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(mylist)):</span><br><span class="line">    mylist[i] = <span class="built_in">int</span>(mylist[i])</span><br></pre></td></tr></table></figure>
+<p>或者直接：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">mylist = <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="built_in">int</span>, s.split()))</span><br></pre></td></tr></table></figure>
+
+<p>18、<code>l3.append(l1[j][i])</code></p>
+<h1 id="肉眼debug练习"><a href="#肉眼debug练习" class="headerlink" title="肉眼debug练习"></a>肉眼debug练习</h1><p>1、你不应该不会。</p>
 <p>2、<code>return pos</code>这一句必定会在<code>i</code>的第一次循环执行，使函数返回，这个逻辑就很奇怪。</p>
 ]]></content>
       <categories>
