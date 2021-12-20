@@ -463,22 +463,6 @@
       </tags>
   </entry>
   <entry>
-    <title>必读：如何看加密文章</title>
-    <url>/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/</url>
-    <content><![CDATA[<p>当你点开一片文章时，如果发现长下面这样：</p>
-<p><img src="/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/image-20211111025338844.png" alt="image-20211111025338844"></p>
-<p>注意，这并不是一篇没有内容的文章，只是内容被加密了。中间那个横线就是密码输入框，在此处输入密码并按回车键就可以解密查看了！（手机也是按虚拟键盘上的回车键）</p>
-<p>如下：</p>
-<p><img src="/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/image-20211111025449872.png" alt="image-20211111025449872"></p>
-]]></content>
-      <categories>
-        <category>计算概论C</category>
-      </categories>
-      <tags>
-        <tag>计算概论C</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>例题：打印月历</title>
     <url>/2021/11/11/%E4%BE%8B%E9%A2%98%EF%BC%9A%E6%89%93%E5%8D%B0%E6%9C%88%E5%8E%86/</url>
     <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="密码错误" data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
@@ -502,6 +486,22 @@
       </categories>
       <tags>
         <tag>计算概论C(21 fall)</tag>
+        <tag>计算概论C</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>必读：如何看加密文章</title>
+    <url>/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/</url>
+    <content><![CDATA[<p>当你点开一片文章时，如果发现长下面这样：</p>
+<p><img src="/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/image-20211111025338844.png" alt="image-20211111025338844"></p>
+<p>注意，这并不是一篇没有内容的文章，只是内容被加密了。中间那个横线就是密码输入框，在此处输入密码并按回车键就可以解密查看了！（手机也是按虚拟键盘上的回车键）</p>
+<p>如下：</p>
+<p><img src="/2021/11/11/%E5%A6%82%E4%BD%95%E7%9C%8B%E5%8A%A0%E5%AF%86%E6%96%87%E7%AB%A0/image-20211111025449872.png" alt="image-20211111025449872"></p>
+]]></content>
+      <categories>
+        <category>计算概论C</category>
+      </categories>
+      <tags>
         <tag>计算概论C</tag>
       </tags>
   </entry>
